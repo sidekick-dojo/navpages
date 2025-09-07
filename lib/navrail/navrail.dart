@@ -278,7 +278,12 @@ class _NavRailState extends State<NavRail> {
 
     if (isMobile) {
       if (_expanded) {
-        final count = _expanded ? 1 : 2;
+        var count = _expanded
+            ? (width ~/ buttonWidth) - 12
+            : (width ~/ buttonWidth) - 10;
+        if (count < 2) {
+          count = 2;
+        }
         if (buttons.length > count) {
           final subbuttons = buttons.sublist(0, count);
           moreButtons.addAll(buttons.sublist(count));
@@ -286,7 +291,10 @@ class _NavRailState extends State<NavRail> {
           buttons.addAll(subbuttons);
         }
       } else {
-        final count = 3;
+        var count = (width ~/ buttonWidth) - 10;
+        if (count < 2) {
+          count = 3;
+        }
         if (buttons.length > count) {
           final subbuttons = buttons.sublist(0, count);
           moreButtons.addAll(buttons.sublist(count));
