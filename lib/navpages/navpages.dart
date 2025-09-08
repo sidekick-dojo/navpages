@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../navrail/providers.dart';
 import '../navrail/navrail.dart';
 import 'navpage.dart';
 
@@ -35,7 +37,7 @@ enum NavPagesDirection {
 ///   ],
 /// )
 /// ```
-class NavPages extends StatefulWidget {
+class NavPages extends ConsumerStatefulWidget {
   /// The list of pages to display.
   ///
   /// Each page corresponds to a button in the navigation rail.
@@ -87,7 +89,7 @@ class NavPages extends StatefulWidget {
   });
 
   @override
-  State<NavPages> createState() => NavPagesState();
+  ConsumerState<NavPages> createState() => NavPagesState();
 
   /// Returns the [NavPagesState] associated with the nearest [NavPages] widget.
   ///
@@ -171,41 +173,45 @@ class NavPages extends StatefulWidget {
 ///
 /// This class manages the navigation state, including the current page,
 /// navigation history, and button interactions.
-class NavPagesState extends State<NavPages> {
+class NavPagesState extends ConsumerState<NavPages> {
   int _selectedIndex = 0;
   int _selectedActionIndex = -1;
-  final List<NavRailButton> _buttons = [];
-  final List<NavRailButton> _actions = [];
   final List<Widget> _history = [];
 
   @override
   void initState() {
     super.initState();
-    _buttons.addAll(
-      widget.buttons.asMap().entries.map((entry) {
-        return entry.value.copyWith(
-          onTap: () {
-            setState(() {
-              _selectedIndex = entry.key;
-            });
-            pushReplacement(widget.children[entry.key].child!);
-            entry.value.onTap?.call();
-          },
-        );
-      }),
-    );
-    _actions.addAll(
-      widget.actions.asMap().entries.map((entry) {
-        return entry.value.copyWith(
-          onTap: () {
-            setState(() {
-              _selectedActionIndex = entry.key;
-            });
-            entry.value.onTap?.call();
-          },
-        );
-      }),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(navRailButtonsProvider.notifier)
+          .setButtons(
+            widget.buttons.asMap().entries.map((entry) {
+              return entry.value.copyWith(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = entry.key;
+                  });
+                  pushReplacement(widget.children[entry.key].child!);
+                  entry.value.onTap?.call();
+                },
+              );
+            }).toList(),
+          );
+      ref
+          .read(navRailActionsProvider.notifier)
+          .setActions(
+            widget.actions.asMap().entries.map((entry) {
+              return entry.value.copyWith(
+                onTap: () {
+                  setState(() {
+                    _selectedActionIndex = entry.key;
+                  });
+                  entry.value.onTap?.call();
+                },
+              );
+            }).toList(),
+          );
+    });
     _history.add(widget.children[_selectedIndex].child!);
   }
 
@@ -225,10 +231,8 @@ class NavPagesState extends State<NavPages> {
             children: [
               NavRail(
                 direction: NavRailDirection.vertical,
-                buttons: _buttons,
                 expandable: widget.expandable,
                 expanded: expanded,
-                actions: _actions,
                 selectedActionIndex: _selectedActionIndex,
               ),
               Expanded(child: _history[_selectedIndex]),
@@ -238,15 +242,33 @@ class NavPagesState extends State<NavPages> {
             children: [
               NavRail(
                 direction: NavRailDirection.horizontal,
-                buttons: _buttons,
                 expandable: widget.expandable,
                 expanded: expanded,
-                actions: _actions,
                 selectedActionIndex: _selectedActionIndex,
               ),
               Expanded(child: _history[_selectedIndex]),
             ],
           );
+  }
+
+  /// Sets the buttons for the navigation rail.
+  ///
+  /// This method updates the buttons for the navigation rail using
+  /// the [NavRailButtonsProvider].
+  ///
+  /// The [buttons] parameter should be a list of [NavRailButton] widgets.
+  void setButtons(List<NavRailButton> buttons) {
+    ref.read(navRailButtonsProvider.notifier).setButtons(buttons);
+  }
+
+  /// Sets the actions for the navigation rail.
+  ///
+  /// This method updates the actions for the navigation rail using
+  /// the [NavRailActionsProvider].
+  ///
+  /// The [actions] parameter should be a list of [NavRailButton] widgets.
+  void setActions(List<NavRailButton> actions) {
+    ref.read(navRailActionsProvider.notifier).setActions(actions);
   }
 
   /// Returns whether the navigation stack can be popped.

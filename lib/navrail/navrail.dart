@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'providers.dart';
 import 'navrail_button.dart';
 
 export 'navrail_button.dart';
@@ -30,19 +32,7 @@ enum NavRailDirection {
 ///   expandable: true,
 /// )
 /// ```
-class NavRail extends StatefulWidget {
-  /// The navigation buttons to display in the rail.
-  ///
-  /// These buttons are typically used for primary navigation
-  /// and correspond to different pages or sections.
-  final List<NavRailButton> buttons;
-
-  /// Additional action buttons to display in the rail.
-  ///
-  /// These buttons are typically used for secondary actions
-  /// like settings, help, or logout.
-  final List<NavRailButton> actions;
-
+class NavRail extends ConsumerStatefulWidget {
   /// The index of the currently selected action button.
   ///
   /// Used to highlight which action button is active.
@@ -131,8 +121,6 @@ class NavRail extends StatefulWidget {
   /// and will use appropriate defaults.
   const NavRail({
     super.key,
-    required this.buttons,
-    this.actions = const [],
     this.selectedActionIndex = 0,
     this.expandable = false,
     this.expanded = false,
@@ -151,7 +139,20 @@ class NavRail extends StatefulWidget {
   });
 
   @override
-  State<NavRail> createState() => _NavRailState();
+  ConsumerState<NavRail> createState() => NavRailState();
+
+  static NavRailState of(BuildContext context) {
+    NavRailState? state = context.findAncestorStateOfType<NavRailState>();
+
+    assert(() {
+      if (state == null) {
+        throw FlutterError('NavRail not found in context');
+      }
+      return true;
+    }());
+
+    return state!;
+  }
 }
 
 /// The state class for [NavRail].
@@ -159,11 +160,9 @@ class NavRail extends StatefulWidget {
 /// This class manages the internal state of the navigation rail,
 /// including button interactions, expansion state, and mobile
 /// responsive behavior.
-class _NavRailState extends State<NavRail> {
+class NavRailState extends ConsumerState<NavRail> {
   int _selectedButtonIndex = 0;
   int _selectedActionIndex = -1;
-  final List<NavRailButton> _buttons = [];
-  final List<NavRailButton> _actions = [];
   bool _expanded = false;
   final _buttonsMenuController = MenuController();
   final _actionsMenuController = MenuController();
@@ -171,10 +170,8 @@ class _NavRailState extends State<NavRail> {
   @override
   void initState() {
     super.initState();
-    _buttons.addAll(widget.buttons);
     _expanded = widget.expanded;
     _selectedActionIndex = widget.selectedActionIndex;
-    _actions.addAll(widget.actions);
   }
 
   /// Toggles the expanded state of the navigation rail.
@@ -226,7 +223,8 @@ class _NavRailState extends State<NavRail> {
       buttonHeight = 40;
     }
 
-    final buttons = _buttons
+    final buttons = ref
+        .watch(navRailButtonsProvider)
         .asMap()
         .entries
         .map(
@@ -252,7 +250,8 @@ class _NavRailState extends State<NavRail> {
 
     final moreButtons = <NavRailButton>[];
 
-    final actions = _actions
+    final actions = ref
+        .watch(navRailActionsProvider)
         .asMap()
         .entries
         .map(
