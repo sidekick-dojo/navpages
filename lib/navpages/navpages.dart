@@ -73,6 +73,26 @@ class NavPages extends ConsumerStatefulWidget {
   /// Only applies when [expandable] is true.
   final bool expanded;
 
+  /// The minimum width of the navigation rail.
+  ///
+  /// Applies when [expanded] is true.
+  final double navrailMinWidth;
+
+  /// The maximum width of the navigation rail.
+  ///
+  /// Applies when [expanded] is true.
+  final double navrailMaxWidth;
+
+  /// The minimum height of the navigation rail.
+  ///
+  /// Applies when [expanded] is true.
+  final double navrailMinHeight;
+
+  /// The maximum height of the navigation rail.
+  ///
+  /// Applies when [expanded] is true.
+  final double navrailMaxHeight;
+
   /// Creates a NavPages widget.
   ///
   /// The [children] parameter is required and should contain the pages
@@ -86,6 +106,10 @@ class NavPages extends ConsumerStatefulWidget {
     this.actions = const [],
     this.expandable = false,
     this.expanded = true,
+    this.navrailMinWidth = 0,
+    this.navrailMaxWidth = 0,
+    this.navrailMinHeight = 0,
+    this.navrailMaxHeight = 0,
   });
 
   @override
@@ -234,6 +258,10 @@ class NavPagesState extends ConsumerState<NavPages> {
                 expandable: widget.expandable,
                 expanded: expanded,
                 selectedActionIndex: _selectedActionIndex,
+                minWidth: widget.navrailMinWidth,
+                maxWidth: widget.navrailMaxWidth,
+                minHeight: widget.navrailMinHeight,
+                maxHeight: widget.navrailMaxHeight,
               ),
               Expanded(child: _history[_selectedIndex]),
             ],
