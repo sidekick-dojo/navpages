@@ -330,6 +330,7 @@ class NavPagesState extends ConsumerState<NavPages> {
   /// The [page] parameter should be a widget that represents
   /// the content to be displayed.
   void push(Widget page) {
+    ref.read(navRailActionsProvider.notifier).setActions([]);
     setState(() {
       _history.add(page);
       _selectedIndex = _history.length - 1;
@@ -343,6 +344,7 @@ class NavPagesState extends ConsumerState<NavPages> {
   /// for scenarios like login/logout where you want to reset
   /// the navigation state.
   void pushReplacement(Widget page) {
+    ref.read(navRailActionsProvider.notifier).setActions([]);
     setState(() {
       _history.clear();
       _history.add(page);
