@@ -35,13 +35,11 @@ class NavPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          ?navbar,
-          if (child != null) Expanded(child: child!),
-        ],
-      ),
+    return Column(
+      children: [
+        ?navbar,
+        if (child != null) Expanded(child: child!),
+      ],
     );
   }
 }

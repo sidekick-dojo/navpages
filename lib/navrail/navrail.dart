@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'providers.dart';
 import 'navrail_button.dart';
 
 export 'navrail_button.dart';
@@ -32,7 +30,17 @@ enum NavRailDirection {
 ///   expandable: true,
 /// )
 /// ```
-class NavRail extends ConsumerStatefulWidget {
+class NavRail extends StatefulWidget {
+  /// The buttons to display in the navigation rail.
+  ///
+  /// If null, uses the buttons from the [NavRailButtonsProvider].
+  final List<NavRailButton> buttons;
+
+  /// The actions to display in the navigation rail.
+  ///
+  /// If null, uses the actions from the [NavRailActionsProvider].
+  final List<NavRailButton> actions;
+
   /// The index of the currently selected action button.
   ///
   /// Used to highlight which action button is active.
@@ -121,6 +129,8 @@ class NavRail extends ConsumerStatefulWidget {
   /// and will use appropriate defaults.
   const NavRail({
     super.key,
+    this.buttons = const [],
+    this.actions = const [],
     this.selectedActionIndex = 0,
     this.expandable = false,
     this.expanded = false,
@@ -139,20 +149,7 @@ class NavRail extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<NavRail> createState() => NavRailState();
-
-  static NavRailState of(BuildContext context) {
-    NavRailState? state = context.findAncestorStateOfType<NavRailState>();
-
-    assert(() {
-      if (state == null) {
-        throw FlutterError('NavRail not found in context');
-      }
-      return true;
-    }());
-
-    return state!;
-  }
+  State<NavRail> createState() => NavRailState();
 }
 
 /// The state class for [NavRail].
@@ -160,18 +157,24 @@ class NavRail extends ConsumerStatefulWidget {
 /// This class manages the internal state of the navigation rail,
 /// including button interactions, expansion state, and mobile
 /// responsive behavior.
-class NavRailState extends ConsumerState<NavRail> {
+class NavRailState extends State<NavRail> {
   int _selectedButtonIndex = 0;
   int _selectedActionIndex = -1;
   bool _expanded = false;
   final _buttonsMenuController = MenuController();
   final _actionsMenuController = MenuController();
+  List<NavRailButton> _buttons = [];
+  List<NavRailButton> _permanentActions = [];
+  List<NavRailButton> _temporaryActions = [];
 
   @override
   void initState() {
     super.initState();
     _expanded = widget.expanded;
     _selectedActionIndex = widget.selectedActionIndex;
+    _buttons = widget.buttons;
+    _permanentActions = widget.actions;
+    _temporaryActions = [];
   }
 
   /// Toggles the expanded state of the navigation rail.
@@ -223,8 +226,7 @@ class NavRailState extends ConsumerState<NavRail> {
       buttonHeight = 40;
     }
 
-    final buttons = ref
-        .watch(navRailButtonsProvider)
+    final buttons = _buttons
         .asMap()
         .entries
         .map(
@@ -250,8 +252,7 @@ class NavRailState extends ConsumerState<NavRail> {
 
     final moreButtons = <NavRailButton>[];
 
-    final actions = ref
-        .watch(navRailActionsProvider)
+    final actions = _permanentActions
         .asMap()
         .entries
         .map(
@@ -274,6 +275,32 @@ class NavRailState extends ConsumerState<NavRail> {
           ),
         )
         .toList();
+
+    final temporaryActions = _temporaryActions
+        .asMap()
+        .entries
+        .map(
+          (entry) => entry.value.copyWith(
+            onTap: () async {
+              setState(() {
+                _selectedActionIndex = entry.key;
+              });
+              await entry.value.onTap?.call();
+            },
+            expanded: _expanded,
+            selected: entry.key == _selectedActionIndex,
+            selectedColor: selectedColor,
+            unselectedColor: unselectedColor,
+            selectedBackgroundColor: selectedBackgroundColor,
+            unselectedBackgroundColor: unselectedBackgroundColor,
+            width: buttonWidth,
+            height: buttonHeight,
+            labelPosition: labelPosition,
+          ),
+        )
+        .toList();
+
+    final allActions = [...temporaryActions, ...actions];
 
     if (isMobile) {
       if (_expanded) {
@@ -396,7 +423,7 @@ class NavRailState extends ConsumerState<NavRail> {
                       ),
                       tooltip: 'Actions',
                     ),
-                    menuChildren: actions
+                    menuChildren: allActions
                         .map(
                           (action) => MenuItemButton(
                             onPressed: action.onTap,
@@ -407,7 +434,7 @@ class NavRailState extends ConsumerState<NavRail> {
                         .toList(),
                   ),
                 ],
-                if (!isMobile) ...actions,
+                if (!isMobile) ...allActions,
               ],
             )
           : Column(
@@ -451,9 +478,15 @@ class NavRailState extends ConsumerState<NavRail> {
                     : SizedBox.shrink(),
                 ...buttons,
                 Spacer(),
-                ...actions,
+                ...allActions,
               ],
             ),
     );
+  }
+
+  void setActions(List<NavRailButton> actions) {
+    setState(() {
+      _temporaryActions = actions;
+    });
   }
 }

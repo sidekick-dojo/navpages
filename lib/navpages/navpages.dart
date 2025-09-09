@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../navrail/providers.dart';
 import '../navrail/navrail.dart';
 import 'navpage.dart';
 
@@ -37,7 +35,7 @@ enum NavPagesDirection {
 ///   ],
 /// )
 /// ```
-class NavPages extends ConsumerStatefulWidget {
+class NavPages extends StatefulWidget {
   /// The list of pages to display.
   ///
   /// Each page corresponds to a button in the navigation rail.
@@ -113,7 +111,7 @@ class NavPages extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<NavPages> createState() => NavPagesState();
+  State<NavPages> createState() => NavPagesState();
 
   /// Returns the [NavPagesState] associated with the nearest [NavPages] widget.
   ///
@@ -197,45 +195,38 @@ class NavPages extends ConsumerStatefulWidget {
 ///
 /// This class manages the navigation state, including the current page,
 /// navigation history, and button interactions.
-class NavPagesState extends ConsumerState<NavPages> {
+class NavPagesState extends State<NavPages> {
   int _selectedIndex = 0;
   int _selectedActionIndex = -1;
+  List<NavRailButton> _buttons = [];
+  List<NavRailButton> _actions = [];
   final List<Widget> _history = [];
+  final GlobalKey<NavRailState> _navRailKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(navRailButtonsProvider.notifier)
-          .setButtons(
-            widget.buttons.asMap().entries.map((entry) {
-              return entry.value.copyWith(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = entry.key;
-                  });
-                  pushReplacement(widget.children[entry.key].child!);
-                  entry.value.onTap?.call();
-                },
-              );
-            }).toList(),
-          );
-      ref
-          .read(navRailActionsProvider.notifier)
-          .setActions(
-            widget.actions.asMap().entries.map((entry) {
-              return entry.value.copyWith(
-                onTap: () {
-                  setState(() {
-                    _selectedActionIndex = entry.key;
-                  });
-                  entry.value.onTap?.call();
-                },
-              );
-            }).toList(),
-          );
-    });
+    _buttons = widget.buttons.asMap().entries.map((entry) {
+      return entry.value.copyWith(
+        onTap: () {
+          setState(() {
+            _selectedIndex = entry.key;
+          });
+          pushReplacement(widget.children[entry.key].child!);
+          entry.value.onTap?.call();
+        },
+      );
+    }).toList();
+    _actions = widget.actions.asMap().entries.map((entry) {
+      return entry.value.copyWith(
+        onTap: () {
+          setState(() {
+            _selectedActionIndex = entry.key;
+          });
+          entry.value.onTap?.call();
+        },
+      );
+    }).toList();
     _history.add(widget.children[_selectedIndex].child!);
   }
 
@@ -254,7 +245,10 @@ class NavPagesState extends ConsumerState<NavPages> {
         ? Row(
             children: [
               NavRail(
+                key: _navRailKey,
                 direction: NavRailDirection.vertical,
+                buttons: _buttons,
+                actions: _actions,
                 expandable: widget.expandable,
                 expanded: expanded,
                 selectedActionIndex: _selectedActionIndex,
@@ -269,7 +263,10 @@ class NavPagesState extends ConsumerState<NavPages> {
         : Column(
             children: [
               NavRail(
+                key: _navRailKey,
                 direction: NavRailDirection.horizontal,
+                buttons: _buttons,
+                actions: _actions,
                 expandable: widget.expandable,
                 expanded: expanded,
                 selectedActionIndex: _selectedActionIndex,
@@ -286,7 +283,9 @@ class NavPagesState extends ConsumerState<NavPages> {
   ///
   /// The [buttons] parameter should be a list of [NavRailButton] widgets.
   void setButtons(List<NavRailButton> buttons) {
-    ref.read(navRailButtonsProvider.notifier).setButtons(buttons);
+    setState(() {
+      _buttons = buttons;
+    });
   }
 
   /// Sets the actions for the navigation rail.
@@ -296,7 +295,7 @@ class NavPagesState extends ConsumerState<NavPages> {
   ///
   /// The [actions] parameter should be a list of [NavRailButton] widgets.
   void setActions(List<NavRailButton> actions) {
-    ref.read(navRailActionsProvider.notifier).setActions(actions);
+    _navRailKey.currentState?.setActions(actions);
   }
 
   /// Returns whether the navigation stack can be popped.
@@ -317,6 +316,7 @@ class NavPagesState extends ConsumerState<NavPages> {
       return;
     }
     setState(() {
+      _navRailKey.currentState?.setActions([]);
       _history.removeLast();
       _selectedIndex = _history.length - 1;
     });
@@ -330,8 +330,8 @@ class NavPagesState extends ConsumerState<NavPages> {
   /// The [page] parameter should be a widget that represents
   /// the content to be displayed.
   void push(Widget page) {
-    ref.read(navRailActionsProvider.notifier).setActions([]);
     setState(() {
+      _navRailKey.currentState?.setActions([]);
       _history.add(page);
       _selectedIndex = _history.length - 1;
     });
@@ -344,8 +344,8 @@ class NavPagesState extends ConsumerState<NavPages> {
   /// for scenarios like login/logout where you want to reset
   /// the navigation state.
   void pushReplacement(Widget page) {
-    ref.read(navRailActionsProvider.notifier).setActions([]);
     setState(() {
+      _navRailKey.currentState?.setActions([]);
       _history.clear();
       _history.add(page);
       _selectedIndex = _history.length - 1;
