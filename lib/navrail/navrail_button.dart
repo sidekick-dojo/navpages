@@ -147,18 +147,12 @@ class NavRailButton extends StatelessWidget {
         ? height + 24
         : height;
 
-    MainAxisAlignment mainAxisAlignment = expanded
-        ? (direction == NavRailDirection.vertical
+    MainAxisAlignment mainAxisAlignment = direction == NavRailDirection.vertical
+        ? expanded
               ? MainAxisAlignment.start
-              : MainAxisAlignment.center)
-        : MainAxisAlignment.start;
-    CrossAxisAlignment crossAxisAlignment = expanded
-        ? (direction == NavRailDirection.vertical
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.start)
-        : (direction == NavRailDirection.vertical
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.center);
+              : MainAxisAlignment.center
+        : MainAxisAlignment.center;
+    CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center;
 
     return InkWell(
       onTap: onTap,
@@ -257,6 +251,7 @@ class NavRailButton extends StatelessWidget {
     Color? unselectedBackgroundColor,
     BorderRadius? borderRadius,
     NavRailButtonLabelPosition? labelPosition,
+    NavRailDirection? direction,
   }) => NavRailButton(
     label: label ?? this.label,
     icon: icon ?? this.icon,
@@ -274,5 +269,6 @@ class NavRailButton extends StatelessWidget {
     borderRadius: borderRadius ?? this.borderRadius,
     labelPosition: labelPosition ?? this.labelPosition,
     key: key,
+    direction: direction ?? this.direction,
   );
 }

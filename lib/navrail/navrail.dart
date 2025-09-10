@@ -268,6 +268,7 @@ class NavRailState extends State<NavRail> {
             width: buttonWidth,
             height: buttonHeight,
             labelPosition: labelPosition,
+            direction: widget.direction,
           ),
         )
         .toList();
@@ -294,6 +295,7 @@ class NavRailState extends State<NavRail> {
             width: buttonWidth,
             height: buttonHeight,
             labelPosition: labelPosition,
+            direction: widget.direction,
           ),
         )
         .toList();
@@ -318,6 +320,7 @@ class NavRailState extends State<NavRail> {
             width: buttonWidth,
             height: buttonHeight,
             labelPosition: labelPosition,
+            direction: widget.direction,
           ),
         )
         .toList();
