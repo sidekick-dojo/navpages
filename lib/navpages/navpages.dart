@@ -91,6 +91,32 @@ class NavPages extends StatefulWidget {
   /// Applies when [expanded] is true.
   final double navrailMaxHeight;
 
+  /// Whether the navigation rail can be scrolled vertically.
+  ///
+  /// When true, shows a scrollable area for the navigation rail.
+  final bool navrailVerticleScrolling;
+
+  /// The leading widget for the navigation rail.
+  ///
+  /// Applies when [expanded] is true.
+  final Widget? navrailLeading;
+
+  /// The small leading widget for the navigation rail.
+  ///
+  /// Applies when [expanded] is false.
+  final Widget? navrailSmallLeading;
+
+  /// The header widget for the site.
+  ///
+  /// Shows above the content when direction is vertical; above the
+  /// navigation rail when direction is horizontal.
+  final Widget? header;
+
+  /// Whether to use the full header when direction is vertical.
+  ///
+  /// When true, the header is displayed above the navigation rail.
+  final bool useFullHeader;
+
   /// Creates a NavPages widget.
   ///
   /// The [children] parameter is required and should contain the pages
@@ -108,6 +134,11 @@ class NavPages extends StatefulWidget {
     this.navrailMaxWidth = 0,
     this.navrailMinHeight = 0,
     this.navrailMaxHeight = 0,
+    this.navrailVerticleScrolling = false,
+    this.navrailLeading,
+    this.navrailSmallLeading,
+    this.header,
+    this.useFullHeader = false,
   });
 
   @override
@@ -244,26 +275,99 @@ class NavPagesState extends State<NavPages> {
     }
 
     return direction == NavPagesDirection.vertical
-        ? Row(
-            children: [
-              NavRail(
-                key: _navRailKey,
-                direction: NavRailDirection.vertical,
-                buttons: _buttons,
-                actions: _actions,
-                expandable: widget.expandable,
-                expanded: expanded,
-                selectedActionIndex: _selectedActionIndex,
-                minWidth: widget.navrailMinWidth,
-                maxWidth: widget.navrailMaxWidth,
-                minHeight: widget.navrailMinHeight,
-                maxHeight: widget.navrailMaxHeight,
-              ),
-              Expanded(child: _history[_selectedIndex]),
-            ],
-          )
+        ? widget.header != null
+              ? widget.useFullHeader
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          widget.header!,
+                          Expanded(
+                            child: Row(
+                              children: [
+                                NavRail(
+                                  key: _navRailKey,
+                                  direction: NavRailDirection.vertical,
+                                  buttons: _buttons,
+                                  actions: _actions,
+                                  expandable: widget.expandable,
+                                  expanded: expanded,
+                                  selectedActionIndex: _selectedActionIndex,
+                                  minWidth: widget.navrailMinWidth,
+                                  maxWidth: widget.navrailMaxWidth,
+                                  minHeight: widget.navrailMinHeight,
+                                  maxHeight: widget.navrailMaxHeight,
+                                  verticleScrolling:
+                                      widget.navrailVerticleScrolling,
+                                  leading: widget.navrailLeading,
+                                  smallLeading: widget.navrailSmallLeading,
+                                ),
+                                Expanded(child: _history[_selectedIndex]),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          NavRail(
+                            key: _navRailKey,
+                            direction: NavRailDirection.vertical,
+                            buttons: _buttons,
+                            actions: _actions,
+                            expandable: widget.expandable,
+                            expanded: expanded,
+                            selectedActionIndex: _selectedActionIndex,
+                            minWidth: widget.navrailMinWidth,
+                            maxWidth: widget.navrailMaxWidth,
+                            minHeight: widget.navrailMinHeight,
+                            maxHeight: widget.navrailMaxHeight,
+                            verticleScrolling: widget.navrailVerticleScrolling,
+                            leading: widget.navrailLeading,
+                            smallLeading: widget.navrailSmallLeading,
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                widget.header!,
+                                Expanded(child: _history[_selectedIndex]),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+              : Row(
+                  children: [
+                    NavRail(
+                      key: _navRailKey,
+                      direction: NavRailDirection.vertical,
+                      buttons: _buttons,
+                      actions: _actions,
+                      expandable: widget.expandable,
+                      expanded: expanded,
+                      selectedActionIndex: _selectedActionIndex,
+                      minWidth: widget.navrailMinWidth,
+                      maxWidth: widget.navrailMaxWidth,
+                      minHeight: widget.navrailMinHeight,
+                      maxHeight: widget.navrailMaxHeight,
+                      verticleScrolling: widget.navrailVerticleScrolling,
+                      leading: widget.navrailLeading,
+                      smallLeading: widget.navrailSmallLeading,
+                    ),
+                    Expanded(
+                      child: widget.header != null
+                          ? Column(
+                              children: [
+                                widget.header!,
+                                Expanded(child: _history[_selectedIndex]),
+                              ],
+                            )
+                          : _history[_selectedIndex],
+                    ),
+                  ],
+                )
         : Column(
             children: [
+              ?widget.header,
               NavRail(
                 key: _navRailKey,
                 direction: NavRailDirection.horizontal,
@@ -272,6 +376,8 @@ class NavPagesState extends State<NavPages> {
                 expandable: widget.expandable,
                 expanded: expanded,
                 selectedActionIndex: _selectedActionIndex,
+                leading: widget.navrailLeading,
+                smallLeading: widget.navrailSmallLeading,
               ),
               Expanded(child: _history[_selectedIndex]),
             ],

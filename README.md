@@ -31,6 +31,10 @@ A flexible Flutter package for creating responsive navigation pages with integra
 - **⚡ Action Buttons**: Support for additional action buttons in the navigation rail with flexible positioning
 - **📲 Mobile Optimization**: Automatic mobile layout with overflow handling and intuitive menu systems
 - **♿ Accessibility**: Full accessibility support with proper semantic labels and keyboard navigation
+- **🎛️ Leading Widgets**: Support for custom leading widgets in both expanded and collapsed navigation states
+- **📋 Header Support**: Optional header widget that can span the full width or be positioned above content
+- **📜 Scrollable Navigation**: Optional vertical scrolling for navigation rails with many items
+- **🔄 Secondary Actions**: Dynamic secondary action buttons that can be set programmatically
 
 ## Installation
 
@@ -38,7 +42,7 @@ Add NavPages to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  navpages: ^1.2.3
+  navpages: ^1.2.5
 ```
 
 Then run:
@@ -273,6 +277,108 @@ NavPages(
 )
 ```
 
+### Dynamic Secondary Actions
+
+Secondary actions can be dynamically updated using the `setSecondaryActions()` method. These actions are temporary and are automatically cleared when navigating between pages:
+
+```dart
+class DynamicSecondaryActions extends StatefulWidget {
+  const DynamicSecondaryActions({super.key});
+
+  @override
+  State<DynamicSecondaryActions> createState() => _DynamicSecondaryActionsState();
+}
+
+class _DynamicSecondaryActionsState extends State<DynamicSecondaryActions> {
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      buttons: [
+        NavRailButton(label: 'Dashboard', icon: Icons.dashboard),
+        NavRailButton(label: 'Analytics', icon: Icons.analytics),
+      ],
+      children: [
+        NavPage(
+          navbar: Navbar(title: 'Dashboard'),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Add context-specific secondary actions
+                  NavPages.of(context).setSecondaryActions([
+                    NavRailButton(
+                      label: 'Export Data',
+                      icon: Icons.download,
+                      onTap: () => _exportData(),
+                    ),
+                    NavRailButton(
+                      label: 'Refresh',
+                      icon: Icons.refresh,
+                      onTap: () => _refreshData(),
+                    ),
+                  ]);
+                },
+                child: Text('Add Dashboard Actions'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Clear secondary actions
+                  NavPages.of(context).setSecondaryActions([]);
+                },
+                child: Text('Clear Actions'),
+              ),
+            ],
+          ),
+        ),
+        NavPage(
+          navbar: Navbar(title: 'Analytics'),
+          child: ElevatedButton(
+            onPressed: () {
+              // Different actions for analytics page
+              NavPages.of(context).setSecondaryActions([
+                NavRailButton(
+                  label: 'Generate Report',
+                  icon: Icons.assessment,
+                  onTap: () => _generateReport(),
+                ),
+                NavRailButton(
+                  label: 'Share',
+                  icon: Icons.share,
+                  onTap: () => _shareReport(),
+                ),
+              ]);
+            },
+            child: Text('Add Analytics Actions'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _exportData() {
+    // Export data logic
+  }
+
+  void _refreshData() {
+    // Refresh data logic
+  }
+
+  void _generateReport() {
+    // Generate report logic
+  }
+
+  void _shareReport() {
+    // Share report logic
+  }
+}
+```
+
+**Key Points about Secondary Actions:**
+- Secondary actions are temporary and context-specific
+- They are automatically cleared when navigating between pages
+- Use them for page-specific actions that don't belong in the main navigation
+- They appear at the bottom of the navigation rail on desktop and in the actions menu on mobile
+
 ### Custom Styling
 
 Customize colors, dimensions, and appearance:
@@ -423,6 +529,144 @@ class _DynamicNavigationExampleState extends State<DynamicNavigationExample> {
 }
 ```
 
+### With Leading Widgets and Header
+
+Add custom leading widgets and headers to enhance your navigation:
+
+```dart
+NavPages(
+  // Custom leading widgets for different states
+  navrailLeading: Container(
+    padding: const EdgeInsets.all(8),
+    child: Column(
+      children: [
+        Icon(Icons.business, size: 32),
+        Text('My App', style: TextStyle(fontSize: 12)),
+      ],
+    ),
+  ),
+  navrailSmallLeading: Container(
+    padding: const EdgeInsets.all(8),
+    child: Icon(Icons.business, size: 24),
+  ),
+  
+  // Optional header widget
+  header: Container(
+    height: 60,
+    color: Colors.blue,
+    child: Row(
+      children: [
+        Icon(Icons.notifications, color: Colors.white),
+        Spacer(),
+        Text('Welcome to My App', style: TextStyle(color: Colors.white)),
+        Spacer(),
+        Icon(Icons.account_circle, color: Colors.white),
+      ],
+    ),
+  ),
+  
+  // Use full header (spans above navigation rail)
+  useFullHeader: true,
+  
+  buttons: [
+    NavRailButton(label: 'Dashboard', icon: Icons.dashboard),
+    NavRailButton(label: 'Analytics', icon: Icons.analytics),
+    NavRailButton(label: 'Reports', icon: Icons.assessment),
+  ],
+  children: [
+    NavPage(child: const DashboardPage()),
+    NavPage(child: const AnalyticsPage()),
+    NavPage(child: const ReportsPage()),
+  ],
+)
+```
+
+### With Scrollable Navigation
+
+Enable vertical scrolling for navigation rails with many items:
+
+```dart
+NavPages(
+  // Enable vertical scrolling
+  navrailVerticleScrolling: true,
+  
+  // Many navigation buttons
+  buttons: List.generate(20, (index) {
+    return NavRailButton(
+      label: 'Page ${index + 1}',
+      icon: Icons.pageview,
+    );
+  }),
+  
+  children: List.generate(20, (index) {
+    return NavPage(
+      navbar: Navbar(title: 'Page ${index + 1}'),
+      child: Center(child: Text('Content for Page ${index + 1}')),
+    );
+  }),
+)
+```
+
+### Dynamic Secondary Actions
+
+Use secondary actions that can be updated programmatically:
+
+```dart
+class SecondaryActionsExample extends StatefulWidget {
+  const SecondaryActionsExample({super.key});
+
+  @override
+  State<SecondaryActionsExample> createState() => _SecondaryActionsExampleState();
+}
+
+class _SecondaryActionsExampleState extends State<SecondaryActionsExample> {
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      buttons: [
+        NavRailButton(label: 'Home', icon: Icons.home),
+        NavRailButton(label: 'Profile', icon: Icons.person),
+      ],
+      children: [
+        NavPage(
+          navbar: Navbar(title: 'Home'),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Add secondary actions dynamically
+                  NavPages.of(context).setSecondaryActions([
+                    NavRailButton(
+                      label: 'Quick Action 1',
+                      icon: Icons.star,
+                      onTap: () => print('Quick Action 1'),
+                    ),
+                    NavRailButton(
+                      label: 'Quick Action 2',
+                      icon: Icons.favorite,
+                      onTap: () => print('Quick Action 2'),
+                    ),
+                  ]);
+                },
+                child: Text('Add Secondary Actions'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Clear secondary actions
+                  NavPages.of(context).setSecondaryActions([]);
+                },
+                child: Text('Clear Secondary Actions'),
+              ),
+            ],
+          ),
+        ),
+        NavPage(child: const ProfilePage()),
+      ],
+    );
+  }
+}
+```
+
 ## API Reference
 
 ### NavPages
@@ -439,10 +683,15 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `direction` | `NavPagesDirection` | `NavPagesDirection.vertical` | Layout direction (horizontal/vertical) |
 | `expandable` | `bool` | `false` | Whether the navigation can be expanded/collapsed |
 | `expanded` | `bool` | `false` | Initial expanded state (only applies when `expandable` is true) |
-| `minWidth` | `double?` | `null` | Minimum width of the navigation rail |
-| `maxWidth` | `double?` | `null` | Maximum width of the navigation rail |
-| `minHeight` | `double?` | `null` | Minimum height of the navigation rail |
-| `maxHeight` | `double?` | `null` | Maximum height of the navigation rail |
+| `navrailMinWidth` | `double` | `0` | Minimum width of the navigation rail |
+| `navrailMaxWidth` | `double` | `0` | Maximum width of the navigation rail |
+| `navrailMinHeight` | `double` | `0` | Minimum height of the navigation rail |
+| `navrailMaxHeight` | `double` | `0` | Maximum height of the navigation rail |
+| `navrailVerticleScrolling` | `bool` | `false` | Whether the navigation rail can be scrolled vertically |
+| `navrailLeading` | `Widget?` | `null` | Leading widget for expanded navigation rail state |
+| `navrailSmallLeading` | `Widget?` | `null` | Leading widget for collapsed navigation rail state |
+| `header` | `Widget?` | `null` | Optional header widget for the site |
+| `useFullHeader` | `bool` | `false` | Whether to use full header when direction is vertical |
 
 #### Static Methods
 
@@ -453,6 +702,19 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `NavPages.push(BuildContext context, Widget page)` | Push a new page onto the navigation stack | `context` - BuildContext<br>`page` - Widget to push | `void` |
 | `NavPages.canPop(BuildContext context)` | Check if navigation can pop (has previous pages) | `context` - BuildContext | `bool` |
 | `NavPages.pushReplacement(BuildContext context, Widget page)` | Replace current page with a new one | `context` - BuildContext<br>`page` - Widget to replace with | `void` |
+
+#### NavPagesState Methods
+
+| Method | Description | Parameters | Returns |
+|--------|-------------|------------|---------|
+| `setButtons(List<NavRailButton> buttons)` | Update navigation buttons dynamically | `buttons` - List of NavRailButton widgets | `void` |
+| `setActions(List<NavRailButton> actions)` | Update action buttons dynamically | `actions` - List of NavRailButton widgets | `void` |
+| `setSecondaryActions(List<NavRailButton> actions)` | Set secondary action buttons dynamically | `actions` - List of NavRailButton widgets | `void` |
+| `setDirection(NavPagesDirection direction)` | Change navigation direction | `direction` - NavPagesDirection enum | `void` |
+| `push(Widget page)` | Push a new page onto the stack | `page` - Widget to push | `void` |
+| `pop()` | Pop current page from stack | None | `void` |
+| `canPop()` | Check if navigation can pop | None | `bool` |
+| `pushReplacement(Widget page)` | Replace current page | `page` - Widget to replace with | `void` |
 
 #### Example Usage
 
@@ -1110,13 +1372,44 @@ If you're still experiencing issues:
 
 This guide helps you migrate between different versions of NavPages.
 
-### Migrating to v1.2.x
+### Migrating to v1.2.5
 
 #### New Features
 
+1. **Leading Widgets**: Added support for custom leading widgets in both expanded and collapsed navigation states
+   - `navrailLeading`: Widget shown when navigation rail is expanded
+   - `navrailSmallLeading`: Widget shown when navigation rail is collapsed
 
-1. **Improved Responsive Behavior**: Better mobile adaptation
-2. **Additional Customization Options**: More styling and behavior options
+2. **Header Support**: Added optional header widget functionality
+   - `header`: Optional header widget for the site
+   - `useFullHeader`: Controls whether header spans full width above navigation rail
+
+3. **Scrollable Navigation**: Added vertical scrolling support for navigation rails
+   - `navrailVerticleScrolling`: Enables vertical scrolling for navigation rails with many items
+
+4. **Secondary Actions**: Enhanced action management with dynamic secondary actions
+   - `setSecondaryActions()`: Method to dynamically set secondary action buttons
+   - Secondary actions are automatically cleared on navigation operations
+
+#### Migration Steps
+
+1. **Update Property Names** (if using old property names):
+   - `minWidth` → `navrailMinWidth`
+   - `maxWidth` → `navrailMaxWidth`
+   - `minHeight` → `navrailMinHeight`
+   - `maxHeight` → `navrailMaxHeight`
+
+2. **Add New Features** (optional):
+   - Consider adding leading widgets for better branding
+   - Add header widget for site-wide navigation elements
+   - Enable vertical scrolling if you have many navigation items
+
+3. **Test Thoroughly**:
+   - Test all navigation functionality
+   - Verify responsive behavior with new features
+   - Check custom styling with new properties
+
+### Migrating to v1.2.x
 
 ### Migrating to v1.1.x
 
@@ -1224,6 +1517,7 @@ NavPages(
 
 | NavPages Version | Flutter Version | Dart Version |
 |------------------|-----------------|--------------|
+| 1.2.5 | >=1.17.0 | ^3.9.0 |
 | 1.2.x | >=1.17.0 | ^3.9.0 |
 | 1.1.x | >=1.17.0 | ^3.0.0 |
 | 1.0.x | >=1.17.0 | ^2.17.0 |
@@ -1263,6 +1557,10 @@ Check out the `example/` directory for complete sample applications demonstratin
 - **Custom Styling**: Themed navigation bars and buttons
 - **Programmatic Navigation**: Using `NavPages.push()` and `NavPages.pop()`
 - **Responsive Design**: Automatic adaptation to screen sizes
+- **Leading Widgets**: Custom leading widgets for branding
+- **Header Support**: Site-wide header functionality
+- **Scrollable Navigation**: Vertical scrolling for many navigation items
+- **Dynamic Secondary Actions**: Context-specific temporary actions
 
 ## Contributing
 

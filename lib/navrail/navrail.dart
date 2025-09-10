@@ -123,6 +123,14 @@ class NavRail extends StatefulWidget {
   /// If null, uses theme-based colors.
   final Color? unselectedBackgroundColor;
 
+  /// Whether the navigation rail can be scrolled vertically.
+  ///
+  /// When true, shows a scrollable area for the navigation rail.
+  final bool verticleScrolling;
+
+  final Widget? leading;
+  final Widget? smallLeading;
+
   /// Creates a NavRail widget.
   ///
   /// The [buttons] parameter is required. All other parameters are optional
@@ -146,6 +154,9 @@ class NavRail extends StatefulWidget {
     this.selectedBackgroundColor,
     this.unselectedColor,
     this.unselectedBackgroundColor,
+    this.verticleScrolling = false,
+    this.leading,
+    this.smallLeading,
   });
 
   @override
@@ -342,6 +353,8 @@ class NavRailState extends State<NavRail> {
                         ),
                       )
                     : SizedBox.shrink(),
+                if (_expanded) ?widget.leading,
+                if (!_expanded) ?widget.smallLeading,
                 ...buttons,
                 if (moreButtons.isNotEmpty)
                   Container(
@@ -442,8 +455,23 @@ class NavRailState extends State<NavRail> {
                         ),
                       )
                     : SizedBox.shrink(),
-                ...buttons,
-                Spacer(),
+                if (_expanded) ?widget.leading,
+                if (!_expanded) ?widget.smallLeading,
+                if (widget.verticleScrolling) ...[
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: buttons,
+                      ),
+                    ),
+                  ),
+                  Divider(
+                    color: theme.colorScheme.secondaryContainer,
+                    thickness: 1,
+                  ),
+                ],
+                if (!widget.verticleScrolling) ...[...buttons, Spacer()],
                 if (secondaryActions.isNotEmpty) ...[
                   ...secondaryActions,
                   Divider(
