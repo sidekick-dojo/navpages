@@ -298,6 +298,16 @@ class NavPagesState extends State<NavPages> {
     _navRailKey.currentState?.setActions(actions);
   }
 
+  /// Sets the secondary actions for the navigation rail.
+  ///
+  /// This method updates the secondary actions for the navigation rail using
+  /// the [NavRailActionsProvider].
+  ///
+  /// The [actions] parameter should be a list of [NavRailButton] widgets.
+  void setSecondaryActions(List<NavRailButton> actions) {
+    _navRailKey.currentState?.setSecondaryActions(actions);
+  }
+
   /// Returns whether the navigation stack can be popped.
   ///
   /// Returns true if there are pages in the navigation history
@@ -316,7 +326,7 @@ class NavPagesState extends State<NavPages> {
       return;
     }
     setState(() {
-      _navRailKey.currentState?.setActions([]);
+      _navRailKey.currentState?.setSecondaryActions([]);
       _history.removeLast();
       _selectedIndex = _history.length - 1;
     });
@@ -331,7 +341,7 @@ class NavPagesState extends State<NavPages> {
   /// the content to be displayed.
   void push(Widget page) {
     setState(() {
-      _navRailKey.currentState?.setActions([]);
+      _navRailKey.currentState?.setSecondaryActions([]);
       _history.add(page);
       _selectedIndex = _history.length - 1;
     });
@@ -345,7 +355,7 @@ class NavPagesState extends State<NavPages> {
   /// the navigation state.
   void pushReplacement(Widget page) {
     setState(() {
-      _navRailKey.currentState?.setActions([]);
+      _navRailKey.currentState?.setSecondaryActions([]);
       _history.clear();
       _history.add(page);
       _selectedIndex = _history.length - 1;

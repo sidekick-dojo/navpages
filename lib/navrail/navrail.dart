@@ -164,8 +164,8 @@ class NavRailState extends State<NavRail> {
   final _buttonsMenuController = MenuController();
   final _actionsMenuController = MenuController();
   List<NavRailButton> _buttons = [];
-  List<NavRailButton> _permanentActions = [];
-  List<NavRailButton> _temporaryActions = [];
+  List<NavRailButton> _actions = [];
+  List<NavRailButton> _secondaryActions = [];
 
   @override
   void initState() {
@@ -173,8 +173,8 @@ class NavRailState extends State<NavRail> {
     _expanded = widget.expanded;
     _selectedActionIndex = widget.selectedActionIndex;
     _buttons = widget.buttons;
-    _permanentActions = widget.actions;
-    _temporaryActions = [];
+    _actions = widget.actions;
+    _secondaryActions = [];
   }
 
   /// Toggles the expanded state of the navigation rail.
@@ -252,7 +252,7 @@ class NavRailState extends State<NavRail> {
 
     final moreButtons = <NavRailButton>[];
 
-    final actions = _permanentActions
+    final actions = _actions
         .asMap()
         .entries
         .map(
@@ -276,7 +276,7 @@ class NavRailState extends State<NavRail> {
         )
         .toList();
 
-    final temporaryActions = _temporaryActions
+    final secondaryActions = _secondaryActions
         .asMap()
         .entries
         .map(
@@ -299,8 +299,6 @@ class NavRailState extends State<NavRail> {
           ),
         )
         .toList();
-
-    final allActions = [...temporaryActions, ...actions];
 
     if (isMobile) {
       if (_expanded) {
@@ -341,33 +339,20 @@ class NavRailState extends State<NavRail> {
                 widget.expandable
                     ? InkWell(
                         onTap: _toggleExpanded,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.secondaryContainer,
-                          ),
-                          width: buttonWidth,
-                          height: buttonHeight,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 4,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _expanded
-                                    ? Icons.keyboard_arrow_up_rounded
-                                    : Icons.keyboard_arrow_down_rounded,
-                                color: theme.colorScheme.onSecondaryContainer,
-                              ),
-                              if (_expanded)
-                                Text(
-                                  'Collapse',
-                                  style: TextStyle(
-                                    color:
-                                        theme.colorScheme.onSecondaryContainer,
-                                  ),
-                                ),
-                            ],
+                        child: Tooltip(
+                          message: _expanded ? 'Collapse' : 'Expand',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.secondaryContainer,
+                            ),
+                            width: 40,
+                            height: buttonHeight,
+                            child: Icon(
+                              _expanded
+                                  ? Icons.keyboard_arrow_up_rounded
+                                  : Icons.keyboard_arrow_down_rounded,
+                              color: theme.colorScheme.onSecondaryContainer,
+                            ),
                           ),
                         ),
                       )
@@ -423,7 +408,7 @@ class NavRailState extends State<NavRail> {
                       ),
                       tooltip: 'Actions',
                     ),
-                    menuChildren: allActions
+                    menuChildren: [...secondaryActions, ...actions]
                         .map(
                           (action) => MenuItemButton(
                             onPressed: action.onTap,
@@ -434,7 +419,7 @@ class NavRailState extends State<NavRail> {
                         .toList(),
                   ),
                 ],
-                if (!isMobile) ...allActions,
+                if (!isMobile) ...[...secondaryActions, ...actions],
               ],
             )
           : Column(
@@ -443,50 +428,67 @@ class NavRailState extends State<NavRail> {
                 widget.expandable
                     ? InkWell(
                         onTap: _toggleExpanded,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.secondaryContainer,
-                          ),
-                          width: buttonWidth,
-                          height: buttonHeight,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 4,
-                            mainAxisAlignment: _expanded
-                                ? MainAxisAlignment.start
-                                : MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _expanded
-                                    ? Icons.keyboard_arrow_left_rounded
-                                    : Icons.keyboard_arrow_right_rounded,
-                                color: theme.colorScheme.onSecondaryContainer,
-                              ),
-                              if (_expanded)
-                                Text(
-                                  'Collapse',
-                                  style: TextStyle(
-                                    color:
-                                        theme.colorScheme.onSecondaryContainer,
-                                  ),
+                        child: Tooltip(
+                          message: _expanded ? 'Collapse' : 'Expand',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.secondaryContainer,
+                            ),
+                            width: buttonWidth,
+                            height: buttonHeight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _expanded
+                                      ? Icons.keyboard_arrow_left_rounded
+                                      : Icons.keyboard_arrow_right_rounded,
+                                  color: theme.colorScheme.onSecondaryContainer,
                                 ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       )
                     : SizedBox.shrink(),
                 ...buttons,
                 Spacer(),
-                ...allActions,
+                if (secondaryActions.isNotEmpty) ...[
+                  ...secondaryActions,
+                  Divider(
+                    color: theme.colorScheme.secondaryContainer,
+                    thickness: 1,
+                  ),
+                ],
+                ...actions,
               ],
             ),
     );
   }
 
+  /// Sets the actions for the navigation rail.
+  ///
+  /// This method updates the actions for the navigation rail using
+  /// the [NavRailActionsProvider].
+  ///
+  /// The [actions] parameter should be a list of [NavRailButton] widgets.
   void setActions(List<NavRailButton> actions) {
     setState(() {
-      _temporaryActions = actions;
+      _actions = actions;
+    });
+  }
+
+  /// Sets the secondary actions for the navigation rail.
+  ///
+  /// This method updates the secondary actions for the navigation rail using
+  /// the [NavRailActionsProvider].
+  ///
+  /// The [actions] parameter should be a list of [NavRailButton] widgets.
+  void setSecondaryActions(List<NavRailButton> actions) {
+    setState(() {
+      _secondaryActions = actions;
     });
   }
 }
