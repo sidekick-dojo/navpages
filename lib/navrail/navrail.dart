@@ -58,6 +58,11 @@ class NavRail extends StatefulWidget {
   /// Only applies when [expandable] is true.
   final bool expanded;
 
+  /// The height of the expandable button.
+  ///
+  /// Only applies when [expandable] is true.
+  final double expandableButtonHeight;
+
   /// The minimum width of the navigation rail.
   ///
   /// Used when the rail is in collapsed state.
@@ -168,6 +173,7 @@ class NavRail extends StatefulWidget {
     this.leading,
     this.smallLeading,
     this.leadingOnTop = false,
+    this.expandableButtonHeight = 40,
   });
 
   @override
@@ -358,7 +364,7 @@ class NavRailState extends State<NavRail> {
                               color: theme.colorScheme.secondaryContainer,
                             ),
                             width: 40,
-                            height: buttonHeight,
+                            height: widget.expandableButtonHeight,
                             child: Icon(
                               _expanded
                                   ? Icons.keyboard_arrow_up_rounded
@@ -376,7 +382,7 @@ class NavRailState extends State<NavRail> {
                   Container(
                     margin: EdgeInsets.all(4),
                     width: _expanded ? buttonWidth / 2 : buttonWidth,
-                    height: buttonHeight,
+                    height: widget.expandableButtonHeight,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       color: theme.colorScheme.inversePrimary.withValues(
@@ -455,7 +461,7 @@ class NavRailState extends State<NavRail> {
                               color: theme.colorScheme.secondaryContainer,
                             ),
                             width: buttonWidth,
-                            height: buttonHeight,
+                            height: widget.expandableButtonHeight,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,

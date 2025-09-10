@@ -71,6 +71,11 @@ class NavPages extends StatefulWidget {
   /// Only applies when [expandable] is true.
   final bool expanded;
 
+  /// The height of the expandable button.
+  ///
+  /// Only applies when [expandable] is true.
+  final double expandableButtonHeight;
+
   /// The minimum width of the navigation rail.
   ///
   /// Applies when [expanded] is true.
@@ -133,6 +138,7 @@ class NavPages extends StatefulWidget {
     this.actions = const [],
     this.expandable = false,
     this.expanded = true,
+    this.expandableButtonHeight = 40,
     this.navrailMinWidth = 0,
     this.navrailMaxWidth = 0,
     this.navrailMinHeight = 0,
@@ -295,6 +301,8 @@ class NavPagesState extends State<NavPages> {
                                   actions: _actions,
                                   expandable: widget.expandable,
                                   expanded: expanded,
+                                  expandableButtonHeight:
+                                      widget.expandableButtonHeight,
                                   selectedActionIndex: _selectedActionIndex,
                                   minWidth: widget.navrailMinWidth,
                                   maxWidth: widget.navrailMaxWidth,
@@ -321,6 +329,8 @@ class NavPagesState extends State<NavPages> {
                             actions: _actions,
                             expandable: widget.expandable,
                             expanded: expanded,
+                            expandableButtonHeight:
+                                widget.expandableButtonHeight,
                             selectedActionIndex: _selectedActionIndex,
                             minWidth: widget.navrailMinWidth,
                             maxWidth: widget.navrailMaxWidth,
@@ -350,6 +360,7 @@ class NavPagesState extends State<NavPages> {
                       actions: _actions,
                       expandable: widget.expandable,
                       expanded: expanded,
+                      expandableButtonHeight: widget.expandableButtonHeight,
                       selectedActionIndex: _selectedActionIndex,
                       minWidth: widget.navrailMinWidth,
                       maxWidth: widget.navrailMaxWidth,
@@ -382,6 +393,7 @@ class NavPagesState extends State<NavPages> {
                 actions: _actions,
                 expandable: widget.expandable,
                 expanded: expanded,
+                expandableButtonHeight: widget.expandableButtonHeight,
                 selectedActionIndex: _selectedActionIndex,
                 leading: widget.navrailLeading,
                 smallLeading: widget.navrailSmallLeading,

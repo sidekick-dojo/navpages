@@ -246,6 +246,52 @@ NavPages(
 )
 ```
 
+### Custom Expandable Button Height
+
+Customize the height of the expand/collapse button to match your design:
+
+```dart
+NavPages(
+  expandable: true,
+  expanded: true,
+  // Custom height for the expand/collapse button
+  expandableButtonHeight: 60,  // Default is 40
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+    NavPage(child: const SettingsPage()),
+  ],
+)
+
+// For horizontal navigation rails
+NavPages(
+  expandable: true,
+  expanded: true,
+  expandableButtonHeight: 50,  // Custom height for horizontal layout
+  direction: NavPagesDirection.horizontal,
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+```
+
+**Key Points about Expandable Button Height:**
+- Only applies when `expandable: true`
+- Controls the height of the expand/collapse button
+- Default height is 40 pixels
+- Should be consistent with your navigation button heights for better visual alignment
+- Works for both vertical and horizontal navigation rails
+
 **Benefits of Expandable Navigation:**
 - Saves horizontal space when collapsed
 - Shows labels when expanded for better UX
@@ -754,6 +800,7 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `direction` | `NavPagesDirection` | `NavPagesDirection.vertical` | Layout direction (horizontal/vertical) |
 | `expandable` | `bool` | `false` | Whether the navigation can be expanded/collapsed |
 | `expanded` | `bool` | `false` | Initial expanded state (only applies when `expandable` is true) |
+| `expandableButtonHeight` | `double` | `40` | Height of the expand/collapse button (only applies when `expandable` is true) |
 | `navrailMinWidth` | `double` | `0` | Minimum width of the navigation rail |
 | `navrailMaxWidth` | `double` | `0` | Maximum width of the navigation rail |
 | `navrailMinHeight` | `double` | `0` | Minimum height of the navigation rail |
@@ -976,6 +1023,7 @@ The navigation rail component (used internally by NavPages). Can be used standal
 | `direction` | `NavRailDirection` | `NavRailDirection.vertical` | Layout direction |
 | `expandable` | `bool` | `false` | Whether expandable |
 | `expanded` | `bool` | `false` | Expanded state |
+| `expandableButtonHeight` | `double` | `40` | Height of the expand/collapse button (only applies when `expandable` is true) |
 | `minWidth` | `double` | `72.0` | Minimum width |
 | `maxWidth` | `double` | `256.0` | Maximum width |
 | `minHeight` | `double` | `72.0` | Minimum height |
@@ -1457,14 +1505,17 @@ This guide helps you migrate between different versions of NavPages.
    - `navrailSmallLeading`: Widget shown when navigation rail is collapsed
    - `navrailLeadingOnTop`: Controls whether leading widgets appear at the top or after the expand/collapse button
 
-2. **Header Support**: Added optional header widget functionality
+2. **Expandable Button Customization**: Added control over expandable button dimensions
+   - `expandableButtonHeight`: Controls the height of the expand/collapse button
+
+3. **Header Support**: Added optional header widget functionality
    - `header`: Optional header widget for the site
    - `useFullHeader`: Controls whether header spans full width above navigation rail
 
-3. **Scrollable Navigation**: Added vertical scrolling support for navigation rails
+4. **Scrollable Navigation**: Added vertical scrolling support for navigation rails
    - `navrailVerticleScrolling`: Enables vertical scrolling for navigation rails with many items
 
-4. **Secondary Actions**: Enhanced action management with dynamic secondary actions
+5. **Secondary Actions**: Enhanced action management with dynamic secondary actions
    - `setSecondaryActions()`: Method to dynamically set secondary action buttons
    - Secondary actions are automatically cleared on navigation operations
 
