@@ -4,39 +4,65 @@ A flexible Flutter package for creating responsive navigation pages with integra
 
 ![NavPages Demo](https://raw.githubusercontent.com/sidekick-dojo/navpages/main/demo.gif)
 
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Basic Usage](#basic-usage)
+- [Advanced Usage](#advanced-usage)
+- [API Reference](#api-reference)
+- [Responsive Behavior](#responsive-behavior)
+- [Customization](#customization)
+- [Performance](#performance)
+- [Troubleshooting](#troubleshooting)
+- [Migration Guide](#migration-guide)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Features
 
-- **Multi-page Management**: Handle multiple pages internally with automatic state management
-- **Responsive Navigation**: Provides Navigation Rail/Sidebar that adapts to screen size (vertical on desktop, horizontal on mobile)
-- **Expandable Design**: Optional expandable navigation with customizable widths and heights
-- **Navigation Controls**: Includes `.of(context)` method with Navigator-like methods (`pop`, `canPop`, `push`, `pushReplacement`) to control page history
-- **Customizable Styling**: Full control over colors, dimensions, and visual appearance
-- **Action Buttons**: Support for additional action buttons in the navigation rail
-- **Mobile Optimization**: Automatic mobile layout with overflow handling and menu systems
+- **🎯 Multi-page Management**: Handle multiple pages internally with automatic state management and seamless transitions
+- **📱 Responsive Navigation**: Provides Navigation Rail/Sidebar that automatically adapts to screen size (vertical on desktop, horizontal on mobile)
+- **🔧 Expandable Design**: Optional expandable navigation with customizable widths and heights for better space utilization
+- **🧭 Navigation Controls**: Includes `.of(context)` method with Navigator-like methods (`pop`, `canPop`, `push`, `pushReplacement`) to control page history
+- **🎨 Customizable Styling**: Full control over colors, dimensions, and visual appearance with theme integration
+- **⚡ Action Buttons**: Support for additional action buttons in the navigation rail with flexible positioning
+- **📲 Mobile Optimization**: Automatic mobile layout with overflow handling and intuitive menu systems
+- **🔄 State Management**: Built-in state management using Riverpod for efficient page state handling
+- **♿ Accessibility**: Full accessibility support with proper semantic labels and keyboard navigation
 
-## Getting Started
+## Installation
 
-Add the package to your Flutter app:
+Add NavPages to your `pubspec.yaml` file:
 
-```bash
-dart pub add navpages
+```yaml
+dependencies:
+  navpages: ^1.2.3
 ```
 
-## Basic Usage
+Then run:
+
+```bash
+flutter pub get
+```
+
+### Requirements
+
+- Flutter SDK: `>=1.17.0`
+- Dart SDK: `^3.9.0`
+
+## Quick Start
+
+Create a simple multi-page app with navigation in just a few steps:
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:navpages/navpages.dart';
 
-class SamplePage extends StatelessWidget {
-  const SamplePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Hello, Pages!'),
-    );
-  }
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -48,81 +74,209 @@ class MyApp extends StatelessWidget {
       title: 'NavPages Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: Scaffold(
-        body: NavPages(
-          buttons: [
-            NavRailButton(
-              label: 'Home',
-              icon: Icons.home,
-            ),
-            NavRailButton(
-              label: 'Settings',
-              icon: Icons.settings,
-            ),
-          ],
-          children: [
-            NavPage(
-              navbar: Navbar(title: 'Home'),
-              child: const SamplePage(),
-            ),
-            NavPage(
-              navbar: Navbar(title: 'Settings'),
-              child: const SamplePage(),
-            ),
-          ],
-        ),
+      home: const HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: NavPages(
+        // Define navigation buttons
+        buttons: [
+          NavRailButton(
+            label: 'Home',
+            icon: Icons.home,
+          ),
+          NavRailButton(
+            label: 'Settings',
+            icon: Icons.settings,
+          ),
+        ],
+        // Define corresponding pages
+        children: [
+          NavPage(
+            navbar: Navbar(title: 'Home'),
+            child: const HomeContent(),
+          ),
+          NavPage(
+            navbar: Navbar(title: 'Settings'),
+            child: const SettingsContent(),
+          ),
+        ],
       ),
     );
   }
 }
 
-void main() {
-  runApp(const MyApp());
+// Sample page content
+class HomeContent extends StatelessWidget {
+  const HomeContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.home, size: 64, color: Colors.deepPurple),
+          SizedBox(height: 16),
+          Text(
+            'Welcome to Home!',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text('This is your home page content.'),
+        ],
+      ),
+    );
+  }
 }
+
+class SettingsContent extends StatelessWidget {
+  const SettingsContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.settings, size: 64, color: Colors.deepPurple),
+          SizedBox(height: 16),
+          Text(
+            'Settings',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text('Configure your app settings here.'),
+        ],
+      ),
+    );
+  }
+}
+```
+
+## Basic Usage
+
+The basic usage section above shows the simplest way to get started. Here are some additional patterns you might find useful:
+
+### Minimal Setup
+
+For the simplest possible setup, you can omit the navbar:
+
+```dart
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Page 1', icon: Icons.pageview),
+    NavRailButton(label: 'Page 2', icon: Icons.pages),
+  ],
+  children: [
+    NavPage(child: const Text('Page 1 Content')),
+    NavPage(child: const Text('Page 2 Content')),
+  ],
+)
+```
+
+### With Custom Callbacks
+
+You can add custom tap handlers to navigation buttons:
+
+```dart
+NavPages(
+  buttons: [
+    NavRailButton(
+      label: 'Home',
+      icon: Icons.home,
+      onTap: () {
+        // Custom logic when home button is tapped
+        print('Home button tapped!');
+      },
+    ),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+  ],
+)
 ```
 
 ## Advanced Usage
 
 ### Expandable Navigation
 
+Create a collapsible navigation rail that saves space on smaller screens:
+
 ```dart
 NavPages(
-  expandable: true,
-  expanded: true,
+  expandable: true,        // Enable expandable functionality
+  expanded: true,          // Start in expanded state
   buttons: [
     NavRailButton(label: 'Dashboard', icon: Icons.dashboard),
     NavRailButton(label: 'Analytics', icon: Icons.analytics),
     NavRailButton(label: 'Reports', icon: Icons.assessment),
+    NavRailButton(label: 'Users', icon: Icons.people),
   ],
   children: [
-    NavPage(navbar: Navbar(title: 'Dashboard'), child: DashboardPage()),
-    NavPage(navbar: Navbar(title: 'Analytics'), child: AnalyticsPage()),
-    NavPage(navbar: Navbar(title: 'Reports'), child: ReportsPage()),
+    NavPage(
+      navbar: Navbar(title: 'Dashboard'),
+      child: const DashboardPage(),
+    ),
+    NavPage(
+      navbar: Navbar(title: 'Analytics'),
+      child: const AnalyticsPage(),
+    ),
+    NavPage(
+      navbar: Navbar(title: 'Reports'),
+      child: const ReportsPage(),
+    ),
+    NavPage(
+      navbar: Navbar(title: 'Users'),
+      child: const UsersPage(),
+    ),
   ],
 )
 ```
 
+**Benefits of Expandable Navigation:**
+- Saves horizontal space when collapsed
+- Shows labels when expanded for better UX
+- Automatically handles mobile layouts
+
 ### With Action Buttons
+
+Separate primary navigation from secondary actions:
 
 ```dart
 NavPages(
+  // Primary navigation buttons
   buttons: [
     NavRailButton(label: 'Home', icon: Icons.home),
     NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Messages', icon: Icons.message),
   ],
+  // Secondary action buttons (appear at bottom on desktop, in menu on mobile)
   actions: [
     NavRailButton(label: 'Settings', icon: Icons.settings),
     NavRailButton(label: 'Help', icon: Icons.help),
+    NavRailButton(label: 'Logout', icon: Icons.logout),
   ],
   children: [
-    NavPage(navbar: Navbar(title: 'Home'), child: HomePage()),
-    NavPage(navbar: Navbar(title: 'Profile'), child: ProfilePage()),
+    NavPage(navbar: Navbar(title: 'Home'), child: const HomePage()),
+    NavPage(navbar: Navbar(title: 'Profile'), child: const ProfilePage()),
+    NavPage(navbar: Navbar(title: 'Messages'), child: const MessagesPage()),
   ],
 )
 ```
 
 ### Custom Styling
+
+Customize colors, dimensions, and appearance:
 
 ```dart
 NavPages(
@@ -130,8 +284,15 @@ NavPages(
     NavRailButton(
       label: 'Custom',
       icon: Icons.star,
+      // Custom colors for selected state
       selectedColor: Colors.amber,
       selectedBackgroundColor: Colors.amber.withOpacity(0.2),
+      // Custom colors for unselected state
+      unselectedColor: Colors.grey,
+      unselectedBackgroundColor: Colors.transparent,
+      // Custom dimensions
+      width: 80,
+      height: 60,
     ),
   ],
   children: [
@@ -140,8 +301,15 @@ NavPages(
         title: 'Custom Page',
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        height: 80, // Custom navbar height
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {},
+          ),
+        ],
       ),
-      child: CustomPage(),
+      child: const CustomPage(),
     ),
   ],
 )
@@ -149,31 +317,108 @@ NavPages(
 
 ### Navigation Control
 
+Programmatically control navigation between pages:
+
 ```dart
-class MyPage extends StatelessWidget {
+class NavigationExample extends StatelessWidget {
+  const NavigationExample({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
             onPressed: () {
-              // Navigate to a new page
-              NavPages.push(context, AnotherPage());
+              // Push a new page onto the stack
+              NavPages.push(context, const DetailPage());
             },
-            child: Text('Go to Another Page'),
+            child: const Text('Go to Detail Page'),
           ),
+          const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              // Check if we can go back
+              // Replace current page with a new one
+              NavPages.pushReplacement(context, const ReplacementPage());
+            },
+            child: const Text('Replace Current Page'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              // Check if we can go back before popping
               if (NavPages.canPop(context)) {
                 NavPages.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Cannot go back')),
+                );
               }
             },
-            child: Text('Go Back'),
+            child: const Text('Go Back'),
           ),
         ],
       ),
+    );
+  }
+}
+```
+
+### Dynamic Navigation
+
+Create navigation that responds to user interactions:
+
+```dart
+class DynamicNavigationExample extends StatefulWidget {
+  const DynamicNavigationExample({super.key});
+
+  @override
+  State<DynamicNavigationExample> createState() => _DynamicNavigationExampleState();
+}
+
+class _DynamicNavigationExampleState extends State<DynamicNavigationExample> {
+  int _currentIndex = 0;
+  final List<String> _tabs = ['Home', 'Profile', 'Settings'];
+
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      buttons: _tabs.asMap().entries.map((entry) {
+        int index = entry.key;
+        String label = entry.value;
+        return NavRailButton(
+          label: label,
+          icon: _getIconForTab(label),
+          selected: index == _currentIndex,
+          onTap: () {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        );
+      }).toList(),
+      children: _tabs.map((tab) {
+        return NavPage(
+          navbar: Navbar(title: tab),
+          child: _buildTabContent(tab),
+        );
+      }).toList(),
+    );
+  }
+
+  IconData _getIconForTab(String tab) {
+    switch (tab) {
+      case 'Home': return Icons.home;
+      case 'Profile': return Icons.person;
+      case 'Settings': return Icons.settings;
+      default: return Icons.help;
+    }
+  }
+
+  Widget _buildTabContent(String tab) {
+    return Center(
+      child: Text('Content for $tab'),
     );
   }
 }
@@ -183,91 +428,497 @@ class MyPage extends StatelessWidget {
 
 ### NavPages
 
-The main widget that manages multiple pages and navigation.
+The main widget that manages multiple pages and navigation. This is the core component that orchestrates the entire navigation system.
 
-#### Properties
+#### Constructor Properties
 
-- `children` (List<NavPage>): List of pages to display
-- `buttons` (List<NavRailButton>): Navigation buttons for the rail
-- `actions` (List<NavRailButton>): Action buttons (optional)
-- `direction` (NavPagesDirection): Layout direction (horizontal/vertical)
-- `expandable` (bool): Whether the navigation can be expanded
-- `expanded` (bool): Initial expanded state
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `children` | `List<NavPage>` | `[]` | List of pages to display. Each page corresponds to a navigation button |
+| `buttons` | `List<NavRailButton>` | `[]` | Navigation buttons for the rail. Must match the order of `children` |
+| `actions` | `List<NavRailButton>?` | `null` | Optional action buttons (appear at bottom on desktop, in menu on mobile) |
+| `direction` | `NavPagesDirection` | `NavPagesDirection.vertical` | Layout direction (horizontal/vertical) |
+| `expandable` | `bool` | `false` | Whether the navigation can be expanded/collapsed |
+| `expanded` | `bool` | `false` | Initial expanded state (only applies when `expandable` is true) |
+| `minWidth` | `double?` | `null` | Minimum width of the navigation rail |
+| `maxWidth` | `double?` | `null` | Maximum width of the navigation rail |
+| `minHeight` | `double?` | `null` | Minimum height of the navigation rail |
+| `maxHeight` | `double?` | `null` | Maximum height of the navigation rail |
 
 #### Static Methods
 
-- `NavPages.of(BuildContext context)`: Get the NavPagesState instance
-- `NavPages.pop(BuildContext context)`: Pop the current page
-- `NavPages.push(BuildContext context, Widget page)`: Push a new page
-- `NavPages.canPop(BuildContext context)`: Check if navigation can pop
-- `NavPages.pushReplacement(BuildContext context, Widget page)`: Replace current page
+| Method | Description | Parameters | Returns |
+|--------|-------------|------------|---------|
+| `NavPages.of(BuildContext context)` | Get the NavPagesState instance for the current context | `context` - BuildContext | `NavPagesState?` |
+| `NavPages.pop(BuildContext context)` | Pop the current page from the navigation stack | `context` - BuildContext | `void` |
+| `NavPages.push(BuildContext context, Widget page)` | Push a new page onto the navigation stack | `context` - BuildContext<br>`page` - Widget to push | `void` |
+| `NavPages.canPop(BuildContext context)` | Check if navigation can pop (has previous pages) | `context` - BuildContext | `bool` |
+| `NavPages.pushReplacement(BuildContext context, Widget page)` | Replace current page with a new one | `context` - BuildContext<br>`page` - Widget to replace with | `void` |
+
+#### Example Usage
+
+```dart
+// Basic usage
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+
+// With expandable navigation
+NavPages(
+  expandable: true,
+  expanded: true,
+  buttons: [/* ... */],
+  children: [/* ... */],
+)
+
+// Programmatic navigation
+void navigateToDetail(BuildContext context) {
+  NavPages.push(context, const DetailPage());
+}
+
+void goBack(BuildContext context) {
+  if (NavPages.canPop(context)) {
+    NavPages.pop(context);
+  }
+}
+```
 
 ### NavPage
 
-Represents a single page within the NavPages widget.
+Represents a single page within the NavPages widget. Each NavPage corresponds to one navigation button.
 
-#### Properties
+#### Constructor Properties
 
-- `navbar` (Navbar?): Optional navigation bar for the page
-- `child` (Widget?): The main content widget
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `navbar` | `Navbar?` | `null` | Optional navigation bar for the page |
+| `child` | `Widget?` | `null` | The main content widget for this page |
+| `key` | `Key?` | `null` | Widget key for identification |
+
+#### Example Usage
+
+```dart
+// Simple page without navbar
+NavPage(
+  child: const Center(
+    child: Text('Simple Page Content'),
+  ),
+)
+
+// Page with navbar
+NavPage(
+  navbar: Navbar(
+    title: 'My Page',
+    actions: [
+      IconButton(
+        icon: const Icon(Icons.settings),
+        onPressed: () {},
+      ),
+    ],
+  ),
+  child: const MyPageContent(),
+)
+```
 
 ### NavRailButton
 
-A button component for the navigation rail.
+A button component for the navigation rail. Provides customizable appearance and behavior.
 
-#### Properties
+#### Constructor Properties
 
-- `label` (String?): Button label text
-- `icon` (IconData?): Button icon
-- `onTap` (Function()?): Tap callback
-- `expanded` (bool): Whether the button is in expanded state
-- `selected` (bool): Whether the button is selected
-- `width` (double?): Custom width
-- `height` (double?): Custom height
-- `selectedColor` (Color?): Color when selected
-- `selectedBackgroundColor` (Color?): Background color when selected
-- `unselectedColor` (Color?): Color when not selected
-- `unselectedBackgroundColor` (Color?): Background color when not selected
-- `labelPosition` (NavRailButtonLabelPosition): Position of the label relative to icon
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `label` | `String?` | `null` | Button label text (shown when expanded) |
+| `icon` | `IconData?` | `null` | Button icon |
+| `onTap` | `Function()?` | `null` | Tap callback function |
+| `expanded` | `bool` | `false` | Whether the button is in expanded state |
+| `selected` | `bool` | `false` | Whether the button is currently selected |
+| `width` | `double?` | `null` | Custom width override |
+| `height` | `double?` | `null` | Custom height override |
+| `selectedColor` | `Color?` | `null` | Color when selected (uses theme if null) |
+| `selectedBackgroundColor` | `Color?` | `null` | Background color when selected |
+| `unselectedColor` | `Color?` | `null` | Color when not selected (uses theme if null) |
+| `unselectedBackgroundColor` | `Color?` | `null` | Background color when not selected |
+| `labelPosition` | `NavRailButtonLabelPosition` | `NavRailButtonLabelPosition.right` | Position of label relative to icon |
+
+#### Example Usage
+
+```dart
+// Basic button
+NavRailButton(
+  label: 'Home',
+  icon: Icons.home,
+)
+
+// Custom styled button
+NavRailButton(
+  label: 'Custom',
+  icon: Icons.star,
+  selectedColor: Colors.amber,
+  selectedBackgroundColor: Colors.amber.withOpacity(0.2),
+  width: 80,
+  height: 60,
+  onTap: () {
+    print('Custom button tapped!');
+  },
+)
+
+// Button with custom label position
+NavRailButton(
+  label: 'Settings',
+  icon: Icons.settings,
+  labelPosition: NavRailButtonLabelPosition.bottom,
+)
+```
 
 ### Navbar
 
-A customizable navigation bar widget.
+A customizable navigation bar widget that appears at the top of each page.
 
-#### Properties
+#### Constructor Properties
 
-- `title` (String): Title text
-- `actions` (List<Widget>): Action widgets (optional)
-- `backgroundColor` (Color?): Background color
-- `foregroundColor` (Color?): Text and icon color
-- `height` (double): Bar height
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `title` | `String` | Required | Title text displayed in the navbar |
+| `actions` | `List<Widget>?` | `null` | Optional action widgets (typically IconButtons) |
+| `backgroundColor` | `Color?` | `null` | Background color (uses theme if null) |
+| `foregroundColor` | `Color?` | `null` | Text and icon color (uses theme if null) |
+| `height` | `double` | `56.0` | Height of the navbar |
+| `leading` | `Widget?` | `null` | Optional leading widget (typically back button) |
+| `centerTitle` | `bool` | `true` | Whether to center the title |
+
+#### Example Usage
+
+```dart
+// Simple navbar
+Navbar(title: 'My Page')
+
+// Navbar with actions
+Navbar(
+  title: 'Dashboard',
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.notifications),
+      onPressed: () {},
+    ),
+    IconButton(
+      icon: const Icon(Icons.search),
+      onPressed: () {},
+    ),
+  ],
+)
+
+// Custom styled navbar
+Navbar(
+  title: 'Custom Page',
+  backgroundColor: Colors.blue,
+  foregroundColor: Colors.white,
+  height: 80,
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.more_vert),
+      onPressed: () {},
+    ),
+  ],
+)
+```
 
 ### NavRail
 
-The navigation rail component (used internally by NavPages).
+The navigation rail component (used internally by NavPages). Can be used standalone for custom implementations.
 
-#### Properties
+#### Constructor Properties
 
-- `buttons` (List<NavRailButton>): Navigation buttons
-- `actions` (List<NavRailButton>): Action buttons
-- `direction` (NavRailDirection): Layout direction
-- `expandable` (bool): Whether expandable
-- `expanded` (bool): Expanded state
-- `minWidth` (double): Minimum width
-- `maxWidth` (double): Maximum width
-- `minHeight` (double): Minimum height
-- `maxHeight` (double): Maximum height
-- `labelPosition` (NavRailButtonLabelPosition?): Label position
-- Various color properties for customization
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `buttons` | `List<NavRailButton>` | `[]` | Navigation buttons |
+| `actions` | `List<NavRailButton>?` | `null` | Action buttons |
+| `direction` | `NavRailDirection` | `NavRailDirection.vertical` | Layout direction |
+| `expandable` | `bool` | `false` | Whether expandable |
+| `expanded` | `bool` | `false` | Expanded state |
+| `minWidth` | `double` | `72.0` | Minimum width |
+| `maxWidth` | `double` | `256.0` | Maximum width |
+| `minHeight` | `double` | `72.0` | Minimum height |
+| `maxHeight` | `double` | `256.0` | Maximum height |
+| `labelPosition` | `NavRailButtonLabelPosition?` | `null` | Label position override |
+| `backgroundColor` | `Color?` | `null` | Background color |
+| `selectedColor` | `Color?` | `null` | Selected button color |
+| `unselectedColor` | `Color?` | `null` | Unselected button color |
+| `selectedBackgroundColor` | `Color?` | `null` | Selected button background |
+| `unselectedBackgroundColor` | `Color?` | `null` | Unselected button background |
+
+#### Example Usage
+
+```dart
+// Standalone navigation rail
+NavRail(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  expandable: true,
+  expanded: true,
+)
+```
+
+### Enums
+
+#### NavPagesDirection
+- `NavPagesDirection.vertical` - Vertical layout (default)
+- `NavPagesDirection.horizontal` - Horizontal layout
+
+#### NavRailDirection
+- `NavRailDirection.vertical` - Vertical rail (default)
+- `NavRailDirection.horizontal` - Horizontal rail
+
+#### NavRailButtonLabelPosition
+- `NavRailButtonLabelPosition.right` - Label to the right of icon (default)
+- `NavRailButtonLabelPosition.bottom` - Label below icon
+- `NavRailButtonLabelPosition.left` - Label to the left of icon
+- `NavRailButtonLabelPosition.top` - Label above icon
 
 ## Responsive Behavior
 
-NavPages automatically adapts to different screen sizes:
+NavPages automatically adapts to different screen sizes and orientations, providing an optimal user experience across all devices.
 
-- **Desktop/Tablet (>768px)**: Vertical navigation rail on the left
-- **Mobile (<768px)**: Horizontal navigation bar at the top
-- **Overflow handling**: Extra buttons are moved to a "More" menu on mobile
-- **Action buttons**: Moved to a menu on mobile, displayed inline on desktop
+### Breakpoints and Layouts
+
+| Screen Size | Layout | Navigation Position | Behavior |
+|-------------|--------|-------------------|----------|
+| **Desktop (>768px)** | Vertical | Left side | Full navigation rail with labels |
+| **Tablet (768px - 1024px)** | Vertical | Left side | Collapsible rail, labels on hover |
+| **Mobile (<768px)** | Horizontal | Top | Compact horizontal bar with overflow menu |
+
+### Desktop Layout (>768px)
+
+```
+┌─────────────────────────────────────────┐
+│ [🏠] Home    │  ┌─────────────────────┐  │
+│ [👤] Profile │  │                     │  │
+│ [⚙️] Settings│  │     Page Content     │  │
+│ [❓] Help    │  │                     │  │
+│              │  │                     │  │
+│              │  │                     │  │
+└─────────────────────────────────────────┘
+```
+
+**Features:**
+- Vertical navigation rail on the left
+- Full labels visible when expanded
+- Smooth expand/collapse animations
+- Action buttons at the bottom of the rail
+
+### Mobile Layout (<768px)
+
+```
+┌─────────────────────────────────────────┐
+│ [🏠] [👤] [⚙️] [⋯] More                │
+├─────────────────────────────────────────┤
+│                                         │
+│           Page Content                  │
+│                                         │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+**Features:**
+- Horizontal navigation bar at the top
+- Overflow buttons moved to "More" menu
+- Action buttons accessible via menu
+- Touch-optimized button sizes
+
+### Responsive Configuration
+
+```dart
+NavPages(
+  // Automatically responsive - no configuration needed
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+    NavRailButton(label: 'Help', icon: Icons.help),
+    NavRailButton(label: 'About', icon: Icons.info),
+  ],
+  actions: [
+    NavRailButton(label: 'Logout', icon: Icons.logout),
+  ],
+  children: [
+    // Your pages here
+  ],
+)
+```
+
+### Custom Responsive Behavior
+
+You can customize the responsive behavior by wrapping NavPages in a LayoutBuilder:
+
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    bool isMobile = constraints.maxWidth < 768;
+    
+    return NavPages(
+      expandable: !isMobile, // Only expandable on desktop
+      expanded: !isMobile,   // Start expanded on desktop
+      buttons: [
+        NavRailButton(
+          label: 'Home',
+          icon: Icons.home,
+          // Smaller buttons on mobile
+          width: isMobile ? 48 : null,
+          height: isMobile ? 48 : null,
+        ),
+        // ... other buttons
+      ],
+      children: [
+        // Your pages
+      ],
+    );
+  },
+)
+```
+
+### Orientation Changes
+
+NavPages handles orientation changes gracefully:
+
+- **Portrait**: Optimized for vertical scrolling
+- **Landscape**: Maximizes horizontal space usage
+- **Automatic**: Transitions smoothly between orientations
+
+## Performance
+
+NavPages is optimized for performance and provides several features to ensure smooth operation.
+
+### Built-in Optimizations
+
+- **Lazy Loading**: Pages are only built when they become active
+- **State Management**: Efficient state management using Riverpod
+- **Memory Management**: Automatic cleanup of unused page states
+- **Animation Optimization**: Hardware-accelerated animations
+- **Widget Reuse**: Efficient widget recycling for better performance
+
+### Best Practices
+
+#### 1. Optimize Page Content
+
+```dart
+// ✅ Good: Use const constructors where possible
+NavPage(
+  child: const MyPageContent(), // const constructor
+)
+
+// ❌ Avoid: Rebuilding unnecessary widgets
+NavPage(
+  child: MyPageContent(), // Will rebuild on every navigation
+)
+```
+
+#### 2. Minimize Navigation Buttons
+
+```dart
+// ✅ Good: Reasonable number of buttons
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+  ],
+  children: [/* ... */],
+)
+
+// ❌ Avoid: Too many buttons (consider using actions)
+NavPages(
+  buttons: [
+    // 10+ buttons can impact performance
+  ],
+)
+```
+
+#### 3. Use Actions for Secondary Navigation
+
+```dart
+// ✅ Good: Separate primary and secondary actions
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  actions: [
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+    NavRailButton(label: 'Help', icon: Icons.help),
+  ],
+  children: [/* ... */],
+)
+```
+
+#### 4. Optimize Page Content
+
+```dart
+// ✅ Good: Use ListView.builder for large lists
+class OptimizedPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 1000,
+      itemBuilder: (context, index) {
+        return ListTile(title: Text('Item $index'));
+      },
+    );
+  }
+}
+
+// ❌ Avoid: Creating all items at once
+class UnoptimizedPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(1000, (index) {
+        return ListTile(title: Text('Item $index'));
+      }),
+    );
+  }
+}
+```
+
+### Performance Monitoring
+
+Monitor your app's performance using Flutter's built-in tools:
+
+```dart
+// Enable performance overlay in debug mode
+void main() {
+  runApp(
+    MaterialApp(
+      home: const MyApp(),
+      debugShowPerformanceOverlay: true, // Debug only
+    ),
+  );
+}
+```
+
+### Memory Usage
+
+NavPages automatically manages memory by:
+
+- **Page Lifecycle**: Pages are disposed when not in use
+- **State Cleanup**: Automatic cleanup of page states
+- **Widget Disposal**: Proper disposal of widgets and controllers
+
+### Animation Performance
+
+All animations are optimized for 60fps:
+
+- **Hardware Acceleration**: Uses GPU for smooth animations
+- **Efficient Transitions**: Optimized page transition animations
+- **Reduced Jank**: Minimized frame drops during navigation
 
 ## Customization
 
@@ -304,13 +955,475 @@ NavRailButton(
 )
 ```
 
+## Troubleshooting
+
+Here are solutions to common issues you might encounter when using NavPages.
+
+### Common Issues
+
+#### 1. Navigation Buttons Not Working
+
+**Problem**: Tapping navigation buttons doesn't switch pages.
+
+**Solution**: Ensure the number of buttons matches the number of children:
+
+```dart
+// ✅ Correct: Same number of buttons and children
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+
+// ❌ Incorrect: Mismatched counts
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    // Missing second page!
+  ],
+)
+```
+
+#### 2. Pages Not Displaying Correctly
+
+**Problem**: Pages appear blank or don't render properly.
+
+**Solution**: Check that your page widgets are properly constructed:
+
+```dart
+// ✅ Good: Proper widget structure
+NavPage(
+  child: const Center(
+    child: Text('Page Content'),
+  ),
+)
+
+// ❌ Avoid: Null or invalid child
+NavPage(
+  child: null, // This will cause issues
+)
+```
+
+#### 3. Navigation State Not Persisting
+
+**Problem**: Navigation state resets when the widget rebuilds.
+
+**Solution**: Use keys to maintain state:
+
+```dart
+NavPages(
+  key: const ValueKey('main_navigation'), // Add a key
+  buttons: [/* ... */],
+  children: [/* ... */],
+)
+```
+
+#### 4. Mobile Layout Issues
+
+**Problem**: Navigation doesn't adapt properly on mobile devices.
+
+**Solution**: Ensure you're not overriding responsive behavior:
+
+```dart
+// ✅ Good: Let NavPages handle responsiveness
+NavPages(
+  buttons: [/* ... */],
+  children: [/* ... */],
+)
+
+// ❌ Avoid: Forcing desktop layout on mobile
+NavPages(
+  expandable: true,
+  expanded: true, // This might cause issues on mobile
+  buttons: [/* ... */],
+  children: [/* ... */],
+)
+```
+
+#### 5. Performance Issues
+
+**Problem**: App becomes slow with many pages or complex content.
+
+**Solutions**:
+
+- Use `const` constructors where possible
+- Implement lazy loading for heavy content
+- Limit the number of navigation buttons (use actions for secondary items)
+
+```dart
+// ✅ Good: Optimized page content
+class OptimizedPage extends StatelessWidget {
+  const OptimizedPage({super.key}); // const constructor
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Optimized Content'),
+    );
+  }
+}
+
+// ❌ Avoid: Rebuilding on every navigation
+class UnoptimizedPage extends StatelessWidget {
+  UnoptimizedPage({super.key}); // No const constructor
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Content'), // Will rebuild unnecessarily
+    );
+  }
+}
+```
+
+### Debug Mode
+
+Enable debug mode to see additional information:
+
+```dart
+NavPages(
+  // Add debug information
+  buttons: [/* ... */],
+  children: [/* ... */],
+  // Enable debug mode in development
+  // debugMode: true, // If available in your version
+)
+```
+
+### Getting Help
+
+If you're still experiencing issues:
+
+1. **Check the example app**: Run the example in the `example/` directory
+2. **Review the API documentation**: Ensure you're using the correct properties
+3. **Check Flutter version**: Ensure you're using a compatible Flutter version
+4. **File an issue**: Report bugs on the [GitHub repository](https://github.com/sidekick-dojo/navpages/issues)
+
+## Migration Guide
+
+This guide helps you migrate between different versions of NavPages.
+
+### Migrating to v1.2.x
+
+#### Breaking Changes
+
+1. **Riverpod Integration**: NavPages now uses Riverpod for state management.
+
+**Before (v1.1.x)**:
+```dart
+// No additional dependencies needed
+```
+
+**After (v1.2.x)**:
+```yaml
+dependencies:
+  navpages: ^1.2.3
+  flutter_riverpod: ^2.6.1
+  riverpod: ^2.6.1
+```
+
+2. **ProviderScope Required**: Wrap your app with ProviderScope.
+
+**Before**:
+```dart
+void main() {
+  runApp(const MyApp());
+}
+```
+
+**After**:
+```dart
+void main() {
+  runApp(
+    ProviderScope(
+      child: const MyApp(),
+    ),
+  );
+}
+```
+
+#### New Features
+
+1. **Enhanced State Management**: Better performance and state persistence
+2. **Improved Responsive Behavior**: Better mobile adaptation
+3. **Additional Customization Options**: More styling and behavior options
+
+### Migrating to v1.1.x
+
+#### Breaking Changes
+
+1. **API Changes**: Some method signatures have changed.
+
+**Before (v1.0.x)**:
+```dart
+NavPages(
+  pages: [/* ... */], // Old property name
+  navigationButtons: [/* ... */], // Old property name
+)
+```
+
+**After (v1.1.x)**:
+```dart
+NavPages(
+  children: [/* ... */], // New property name
+  buttons: [/* ... */], // New property name
+)
+```
+
+#### Migration Steps
+
+1. **Update Property Names**:
+   - `pages` → `children`
+   - `navigationButtons` → `buttons`
+
+2. **Update Method Calls**:
+   - Check for any custom method calls that might have changed
+
+3. **Test Thoroughly**:
+   - Test all navigation functionality
+   - Verify responsive behavior
+   - Check custom styling
+
+### Migrating from Other Navigation Packages
+
+#### From BottomNavigationBar
+
+**Before**:
+```dart
+BottomNavigationBar(
+  currentIndex: _currentIndex,
+  onTap: (index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  },
+  items: [
+    BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+  ],
+)
+```
+
+**After**:
+```dart
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+```
+
+#### From NavigationRail
+
+**Before**:
+```dart
+NavigationRail(
+  selectedIndex: _selectedIndex,
+  onDestinationSelected: (index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  },
+  destinations: [
+    NavigationRailDestination(icon: Icon(Icons.home), label: Text('Home')),
+    NavigationRailDestination(icon: Icon(Icons.person), label: Text('Profile')),
+  ],
+)
+```
+
+**After**:
+```dart
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+```
+
+### Version Compatibility
+
+| NavPages Version | Flutter Version | Dart Version |
+|------------------|-----------------|--------------|
+| 1.2.x | >=1.17.0 | ^3.9.0 |
+| 1.1.x | >=1.17.0 | ^3.0.0 |
+| 1.0.x | >=1.17.0 | ^2.17.0 |
+
 ## Examples
 
 Check out the `example/` directory for complete sample applications demonstrating various use cases.
 
+### Running the Example
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/sidekick-dojo/navpages.git
+   cd navpages
+   ```
+
+2. **Navigate to the example directory**:
+   ```bash
+   cd example
+   ```
+
+3. **Get dependencies**:
+   ```bash
+   flutter pub get
+   ```
+
+4. **Run the example**:
+   ```bash
+   flutter run
+   ```
+
+### Example Features Demonstrated
+
+- **Basic Navigation**: Simple multi-page setup
+- **Expandable Navigation**: Collapsible navigation rail
+- **Action Buttons**: Secondary actions in navigation
+- **Custom Styling**: Themed navigation bars and buttons
+- **Programmatic Navigation**: Using `NavPages.push()` and `NavPages.pop()`
+- **Responsive Design**: Automatic adaptation to screen sizes
+
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions to NavPages! Here's how you can help improve the package.
+
+### Ways to Contribute
+
+- 🐛 **Report Bugs**: Found a bug? Please file an issue with detailed information
+- 💡 **Suggest Features**: Have an idea? Open a feature request issue
+- 📝 **Improve Documentation**: Help others by improving docs and examples
+- 🔧 **Submit Code**: Fix bugs or add new features via pull requests
+- 🧪 **Test**: Help test new features and report issues
+
+### Development Setup
+
+1. **Fork the repository** on GitHub
+2. **Clone your fork**:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/navpages.git
+   cd navpages
+   ```
+
+3. **Create a branch** for your changes:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+4. **Install dependencies**:
+   ```bash
+   flutter pub get
+   ```
+
+5. **Run tests**:
+   ```bash
+   flutter test
+   ```
+
+6. **Run the example** to test your changes:
+   ```bash
+   cd example
+   flutter run
+   ```
+
+### Code Style Guidelines
+
+- Follow the existing code style and formatting
+- Use meaningful variable and function names
+- Add comments for complex logic
+- Ensure all tests pass
+- Update documentation for new features
+
+### Pull Request Process
+
+1. **Ensure your code works**: Test thoroughly on different screen sizes
+2. **Update documentation**: Update README.md and API docs if needed
+3. **Add tests**: Include tests for new functionality
+4. **Update CHANGELOG.md**: Document your changes
+5. **Submit PR**: Create a pull request with a clear description
+
+### Pull Request Template
+
+When submitting a pull request, please include:
+
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Testing
+- [ ] Tests pass
+- [ ] Tested on multiple screen sizes
+- [ ] Tested on different platforms
+
+## Checklist
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Documentation updated
+- [ ] CHANGELOG.md updated
+```
+
+### Issue Guidelines
+
+When reporting issues, please include:
+
+- **Flutter version**: `flutter --version`
+- **Package version**: Current version of navpages
+- **Platform**: iOS, Android, Web, Desktop
+- **Steps to reproduce**: Clear steps to reproduce the issue
+- **Expected behavior**: What should happen
+- **Actual behavior**: What actually happens
+- **Screenshots**: If applicable
+- **Code sample**: Minimal code that reproduces the issue
+
+### Feature Request Guidelines
+
+When requesting features, please include:
+
+- **Use case**: Why is this feature needed?
+- **Proposed solution**: How should it work?
+- **Alternatives**: Other ways to solve the problem
+- **Additional context**: Any other relevant information
+
+### Community Guidelines
+
+- Be respectful and inclusive
+- Help others learn and grow
+- Provide constructive feedback
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md)
+
+### Recognition
+
+Contributors will be recognized in:
+- README.md contributors section
+- Release notes
+- Package documentation
+
+Thank you for contributing to NavPages! 🎉
 
 ## License
 
