@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.10] - 2025-09-10
 
+### Fixed
+- Exapandable Button Height, to work in horizontal direction
+
+## [1.2.10] - 2025-09-10
+
 ### Added
-- Exanpandable Button Height, to better match navbar height as needed
+- Exapandable Button Height, to better match navbar height as needed
 
 ## [1.2.9] - 2025-09-10
 

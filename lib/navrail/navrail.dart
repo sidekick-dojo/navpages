@@ -233,6 +233,7 @@ class NavRailState extends State<NavRail> {
     double height = size.height;
     double buttonWidth = 0;
     double buttonHeight = 0;
+    double expandableButtonHeight = widget.expandableButtonHeight;
 
     NavRailButtonLabelPosition labelPosition =
         widget.labelPosition ??
@@ -246,6 +247,7 @@ class NavRailState extends State<NavRail> {
           : (widget.minHeight == 0 ? 40 : widget.minHeight);
       buttonWidth = _expanded ? 120 : 40;
       buttonHeight = height;
+      expandableButtonHeight = height;
     } else {
       width = _expanded
           ? (widget.maxWidth == 0 ? 120 : widget.maxWidth)
@@ -364,7 +366,7 @@ class NavRailState extends State<NavRail> {
                               color: theme.colorScheme.secondaryContainer,
                             ),
                             width: 40,
-                            height: widget.expandableButtonHeight,
+                            height: expandableButtonHeight,
                             child: Icon(
                               _expanded
                                   ? Icons.keyboard_arrow_up_rounded
@@ -382,7 +384,7 @@ class NavRailState extends State<NavRail> {
                   Container(
                     margin: EdgeInsets.all(4),
                     width: _expanded ? buttonWidth / 2 : buttonWidth,
-                    height: widget.expandableButtonHeight,
+                    height: expandableButtonHeight,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       color: theme.colorScheme.inversePrimary.withValues(
@@ -461,7 +463,7 @@ class NavRailState extends State<NavRail> {
                               color: theme.colorScheme.secondaryContainer,
                             ),
                             width: buttonWidth,
-                            height: widget.expandableButtonHeight,
+                            height: expandableButtonHeight,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,
