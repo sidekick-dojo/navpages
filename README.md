@@ -30,7 +30,6 @@ A flexible Flutter package for creating responsive navigation pages with integra
 - **🎨 Customizable Styling**: Full control over colors, dimensions, and visual appearance with theme integration
 - **⚡ Action Buttons**: Support for additional action buttons in the navigation rail with flexible positioning
 - **📲 Mobile Optimization**: Automatic mobile layout with overflow handling and intuitive menu systems
-- **🔄 State Management**: Built-in state management using Riverpod for efficient page state handling
 - **♿ Accessibility**: Full accessibility support with proper semantic labels and keyboard navigation
 
 ## Installation
@@ -800,7 +799,6 @@ NavPages is optimized for performance and provides several features to ensure sm
 ### Built-in Optimizations
 
 - **Lazy Loading**: Pages are only built when they become active
-- **State Management**: Efficient state management using Riverpod
 - **Memory Management**: Automatic cleanup of unused page states
 - **Animation Optimization**: Hardware-accelerated animations
 - **Widget Reuse**: Efficient widget recycling for better performance
@@ -1114,48 +1112,11 @@ This guide helps you migrate between different versions of NavPages.
 
 ### Migrating to v1.2.x
 
-#### Breaking Changes
-
-1. **Riverpod Integration**: NavPages now uses Riverpod for state management.
-
-**Before (v1.1.x)**:
-```dart
-// No additional dependencies needed
-```
-
-**After (v1.2.x)**:
-```yaml
-dependencies:
-  navpages: ^1.2.3
-  flutter_riverpod: ^2.6.1
-  riverpod: ^2.6.1
-```
-
-2. **ProviderScope Required**: Wrap your app with ProviderScope.
-
-**Before**:
-```dart
-void main() {
-  runApp(const MyApp());
-}
-```
-
-**After**:
-```dart
-void main() {
-  runApp(
-    ProviderScope(
-      child: const MyApp(),
-    ),
-  );
-}
-```
-
 #### New Features
 
-1. **Enhanced State Management**: Better performance and state persistence
-2. **Improved Responsive Behavior**: Better mobile adaptation
-3. **Additional Customization Options**: More styling and behavior options
+
+1. **Improved Responsive Behavior**: Better mobile adaptation
+2. **Additional Customization Options**: More styling and behavior options
 
 ### Migrating to v1.1.x
 
