@@ -2,6 +2,8 @@
 
 A flexible Flutter package for creating responsive navigation pages with integrated navigation rails and sidebars. NavPages provides a complete solution for managing multiple pages with built-in navigation controls and responsive design.
 
+![NavPages Demo](https://raw.githubusercontent.com/sidekick-dojo/navpages/main/demo.gif)
+
 ## Features
 
 - **Multi-page Management**: Handle multiple pages internally with automatic state management
