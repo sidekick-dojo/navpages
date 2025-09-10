@@ -293,6 +293,7 @@ class NavPagesState extends State<NavPages> {
                           widget.header!,
                           Expanded(
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 NavRail(
                                   key: _navRailKey,
@@ -321,6 +322,7 @@ class NavPagesState extends State<NavPages> {
                         ],
                       )
                     : Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           NavRail(
                             key: _navRailKey,
@@ -343,6 +345,7 @@ class NavPagesState extends State<NavPages> {
                           ),
                           Expanded(
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 widget.header!,
                                 Expanded(child: _history[_selectedIndex]),
@@ -352,6 +355,7 @@ class NavPagesState extends State<NavPages> {
                         ],
                       )
               : Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     NavRail(
                       key: _navRailKey,
@@ -371,16 +375,7 @@ class NavPagesState extends State<NavPages> {
                       smallLeading: widget.navrailSmallLeading,
                       leadingOnTop: widget.navrailLeadingOnTop,
                     ),
-                    Expanded(
-                      child: widget.header != null
-                          ? Column(
-                              children: [
-                                widget.header!,
-                                Expanded(child: _history[_selectedIndex]),
-                              ],
-                            )
-                          : _history[_selectedIndex],
-                    ),
+                    Expanded(child: _history[_selectedIndex]),
                   ],
                 )
         : Column(
