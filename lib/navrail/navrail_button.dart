@@ -139,14 +139,8 @@ class NavRailButton extends StatelessWidget {
       0.5,
     )!.withValues(alpha: 0.8);
 
-    final screenSize = MediaQuery.sizeOf(context);
-    bool isMobile = screenSize.width < 768;
     double width = this.width ?? 40;
     double height = this.height ?? 40;
-    if (isMobile) {
-      width = expanded ? width : width * 2;
-      height = expanded ? height : height * 2;
-    }
     height =
         labelPosition == NavRailButtonLabelPosition.top ||
             labelPosition == NavRailButtonLabelPosition.bottom
@@ -155,21 +149,15 @@ class NavRailButton extends StatelessWidget {
 
     MainAxisAlignment mainAxisAlignment = expanded
         ? (direction == NavRailDirection.vertical
-              ? (isMobile ? MainAxisAlignment.center : MainAxisAlignment.start)
+              ? MainAxisAlignment.start
               : MainAxisAlignment.center)
-        : (direction == NavRailDirection.vertical
-              ? (isMobile ? MainAxisAlignment.center : MainAxisAlignment.start)
-              : MainAxisAlignment.start);
+        : MainAxisAlignment.start;
     CrossAxisAlignment crossAxisAlignment = expanded
         ? (direction == NavRailDirection.vertical
               ? CrossAxisAlignment.center
-              : (isMobile
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start))
+              : CrossAxisAlignment.start)
         : (direction == NavRailDirection.vertical
-              ? (isMobile
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start)
+              ? CrossAxisAlignment.start
               : CrossAxisAlignment.center);
 
     return InkWell(

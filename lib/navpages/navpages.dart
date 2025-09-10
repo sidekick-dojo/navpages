@@ -202,10 +202,12 @@ class NavPagesState extends State<NavPages> {
   List<NavRailButton> _actions = [];
   final List<Widget> _history = [];
   final GlobalKey<NavRailState> _navRailKey = GlobalKey();
+  NavPagesDirection _direction = NavPagesDirection.vertical;
 
   @override
   void initState() {
     super.initState();
+    _direction = widget.direction;
     _buttons = widget.buttons.asMap().entries.map((entry) {
       return entry.value.copyWith(
         onTap: () {
@@ -234,7 +236,7 @@ class NavPagesState extends State<NavPages> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final isMobile = size.width < 768;
-    NavPagesDirection direction = widget.direction;
+    NavPagesDirection direction = _direction;
     bool expanded = widget.expanded;
     if (isMobile) {
       direction = NavPagesDirection.horizontal;
@@ -307,6 +309,20 @@ class NavPagesState extends State<NavPages> {
   void setSecondaryActions(List<NavRailButton> actions) {
     _navRailKey.currentState?.setSecondaryActions(actions);
   }
+
+  /// Sets the direction for the navigation pages.
+  ///
+  /// This method updates the direction for the navigation pages using
+  /// the [NavPagesDirection] enum.
+  ///
+  /// The [direction] parameter should be a [NavPagesDirection] enum.
+  void setDirection(NavPagesDirection direction) {
+    setState(() {
+      _direction = direction;
+    });
+  }
+
+  NavPagesDirection get direction => _direction;
 
   /// Returns whether the navigation stack can be popped.
   ///

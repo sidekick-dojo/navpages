@@ -201,11 +201,11 @@ class NavRailState extends State<NavRail> {
         widget.unselectedBackgroundColor ?? Colors.transparent;
 
     final size = MediaQuery.sizeOf(context);
-    final isMobile = size.width < 768;
     double width = size.width;
     double height = size.height;
     double buttonWidth = 0;
     double buttonHeight = 0;
+
     NavRailButtonLabelPosition labelPosition =
         widget.labelPosition ??
         (widget.direction == NavRailDirection.horizontal
@@ -215,7 +215,7 @@ class NavRailState extends State<NavRail> {
     if (widget.direction == NavRailDirection.horizontal) {
       height = _expanded
           ? (widget.maxHeight == 0 ? 80 : widget.maxHeight)
-          : (widget.minHeight == 0 ? 80 : widget.minHeight);
+          : (widget.minHeight == 0 ? 40 : widget.minHeight);
       buttonWidth = _expanded ? 120 : 40;
       buttonHeight = height;
     } else {
@@ -300,31 +300,16 @@ class NavRailState extends State<NavRail> {
         )
         .toList();
 
-    if (isMobile) {
-      if (_expanded) {
-        var count = _expanded
-            ? (width ~/ buttonWidth) - 12
-            : (width ~/ buttonWidth) - 10;
-        if (count < 2) {
-          count = 2;
-        }
-        if (buttons.length > count) {
-          final subbuttons = buttons.sublist(0, count);
-          moreButtons.addAll(buttons.sublist(count));
-          buttons.clear();
-          buttons.addAll(subbuttons);
-        }
-      } else {
-        var count = (width ~/ buttonWidth) - 10;
-        if (count < 2) {
-          count = 3;
-        }
-        if (buttons.length > count) {
-          final subbuttons = buttons.sublist(0, count);
-          moreButtons.addAll(buttons.sublist(count));
-          buttons.clear();
-          buttons.addAll(subbuttons);
-        }
+    if (widget.direction == NavRailDirection.horizontal) {
+      var count = (width ~/ buttonWidth) - (_expanded ? 2 : 1);
+      if (count < 2) {
+        count = 2;
+      }
+      if (buttons.length > count) {
+        final subbuttons = buttons.sublist(0, count);
+        moreButtons.addAll(buttons.sublist(count));
+        buttons.clear();
+        buttons.addAll(subbuttons);
       }
     }
 
@@ -394,7 +379,7 @@ class NavRailState extends State<NavRail> {
                           .toList(),
                     ),
                   ),
-                if (isMobile) ...[
+                if (widget.direction == NavRailDirection.horizontal) ...[
                   Spacer(),
                   MenuAnchor(
                     controller: _actionsMenuController,
@@ -419,7 +404,11 @@ class NavRailState extends State<NavRail> {
                         .toList(),
                   ),
                 ],
-                if (!isMobile) ...[...secondaryActions, ...actions],
+                if (widget.direction == NavRailDirection.vertical) ...[
+                  Spacer(),
+                  ...secondaryActions,
+                  ...actions,
+                ],
               ],
             )
           : Column(
