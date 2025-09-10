@@ -31,7 +31,7 @@ A flexible Flutter package for creating responsive navigation pages with integra
 - **⚡ Action Buttons**: Support for additional action buttons in the navigation rail with flexible positioning
 - **📲 Mobile Optimization**: Automatic mobile layout with overflow handling and intuitive menu systems
 - **♿ Accessibility**: Full accessibility support with proper semantic labels and keyboard navigation
-- **🎛️ Leading Widgets**: Support for custom leading widgets in both expanded and collapsed navigation states
+- **🎛️ Leading Widgets**: Support for custom leading widgets in both expanded and collapsed navigation states with flexible positioning
 - **📋 Header Support**: Optional header widget that can span the full width or be positioned above content
 - **📜 Scrollable Navigation**: Optional vertical scrolling for navigation rails with many items
 - **🔄 Secondary Actions**: Dynamic secondary action buttons that can be set programmatically
@@ -581,6 +581,77 @@ NavPages(
 )
 ```
 
+### Leading Widget Positioning
+
+Control where leading widgets appear in the navigation rail:
+
+```dart
+// Leading widgets at the top (default: false)
+NavPages(
+  navrailLeadingOnTop: true,  // Leading widgets appear at the top
+  navrailLeading: Container(
+    padding: const EdgeInsets.all(8),
+    child: Column(
+      children: [
+        Icon(Icons.business, size: 32),
+        Text('My App', style: TextStyle(fontSize: 12)),
+      ],
+    ),
+  ),
+  navrailSmallLeading: Container(
+    padding: const EdgeInsets.all(8),
+    child: Icon(Icons.business, size: 24),
+  ),
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+
+// Leading widgets after expand/collapse button (default: false)
+NavPages(
+  navrailLeadingOnTop: false,  // Leading widgets appear after expand button
+  navrailLeading: Container(
+    padding: const EdgeInsets.all(8),
+    child: Column(
+      children: [
+        Icon(Icons.business, size: 32),
+        Text('My App', style: TextStyle(fontSize: 12)),
+      ],
+    ),
+  ),
+  navrailSmallLeading: Container(
+    padding: const EdgeInsets.all(8),
+    child: Icon(Icons.business, size: 24),
+  ),
+  expandable: true,  // Must be true to see the difference
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+```
+
+**Layout Order with `leadingOnTop: true`:**
+1. Leading widget (expanded/collapsed)
+2. Expand/collapse button
+3. Navigation buttons
+4. Action buttons
+
+**Layout Order with `leadingOnTop: false` (default):**
+1. Expand/collapse button
+2. Leading widget (expanded/collapsed)
+3. Navigation buttons
+4. Action buttons
+
 ### With Scrollable Navigation
 
 Enable vertical scrolling for navigation rails with many items:
@@ -690,6 +761,7 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `navrailVerticleScrolling` | `bool` | `false` | Whether the navigation rail can be scrolled vertically |
 | `navrailLeading` | `Widget?` | `null` | Leading widget for expanded navigation rail state |
 | `navrailSmallLeading` | `Widget?` | `null` | Leading widget for collapsed navigation rail state |
+| `navrailLeadingOnTop` | `bool` | `false` | Whether leading widgets appear at the top of the navigation rail |
 | `header` | `Widget?` | `null` | Optional header widget for the site |
 | `useFullHeader` | `bool` | `false` | Whether to use full header when direction is vertical |
 
@@ -914,6 +986,10 @@ The navigation rail component (used internally by NavPages). Can be used standal
 | `unselectedColor` | `Color?` | `null` | Unselected button color |
 | `selectedBackgroundColor` | `Color?` | `null` | Selected button background |
 | `unselectedBackgroundColor` | `Color?` | `null` | Unselected button background |
+| `verticleScrolling` | `bool` | `false` | Whether the navigation rail can be scrolled vertically |
+| `leading` | `Widget?` | `null` | Leading widget for expanded navigation rail state |
+| `smallLeading` | `Widget?` | `null` | Leading widget for collapsed navigation rail state |
+| `leadingOnTop` | `bool` | `false` | Whether leading widgets appear at the top of the navigation rail |
 
 #### Example Usage
 
@@ -1379,6 +1455,7 @@ This guide helps you migrate between different versions of NavPages.
 1. **Leading Widgets**: Added support for custom leading widgets in both expanded and collapsed navigation states
    - `navrailLeading`: Widget shown when navigation rail is expanded
    - `navrailSmallLeading`: Widget shown when navigation rail is collapsed
+   - `navrailLeadingOnTop`: Controls whether leading widgets appear at the top or after the expand/collapse button
 
 2. **Header Support**: Added optional header widget functionality
    - `header`: Optional header widget for the site

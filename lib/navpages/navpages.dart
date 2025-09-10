@@ -106,6 +106,9 @@ class NavPages extends StatefulWidget {
   /// Applies when [expanded] is false.
   final Widget? navrailSmallLeading;
 
+  /// Whether the leading widget is on the top is true.
+  final bool navrailLeadingOnTop;
+
   /// The header widget for the site.
   ///
   /// Shows above the content when direction is vertical; above the
@@ -139,6 +142,7 @@ class NavPages extends StatefulWidget {
     this.navrailSmallLeading,
     this.header,
     this.useFullHeader = false,
+    this.navrailLeadingOnTop = false,
   });
 
   @override
@@ -300,6 +304,7 @@ class NavPagesState extends State<NavPages> {
                                       widget.navrailVerticleScrolling,
                                   leading: widget.navrailLeading,
                                   smallLeading: widget.navrailSmallLeading,
+                                  leadingOnTop: widget.navrailLeadingOnTop,
                                 ),
                                 Expanded(child: _history[_selectedIndex]),
                               ],
@@ -324,6 +329,7 @@ class NavPagesState extends State<NavPages> {
                             verticleScrolling: widget.navrailVerticleScrolling,
                             leading: widget.navrailLeading,
                             smallLeading: widget.navrailSmallLeading,
+                            leadingOnTop: widget.navrailLeadingOnTop,
                           ),
                           Expanded(
                             child: Column(
@@ -352,6 +358,7 @@ class NavPagesState extends State<NavPages> {
                       verticleScrolling: widget.navrailVerticleScrolling,
                       leading: widget.navrailLeading,
                       smallLeading: widget.navrailSmallLeading,
+                      leadingOnTop: widget.navrailLeadingOnTop,
                     ),
                     Expanded(
                       child: widget.header != null
@@ -378,6 +385,7 @@ class NavPagesState extends State<NavPages> {
                 selectedActionIndex: _selectedActionIndex,
                 leading: widget.navrailLeading,
                 smallLeading: widget.navrailSmallLeading,
+                leadingOnTop: widget.navrailLeadingOnTop,
               ),
               Expanded(child: _history[_selectedIndex]),
             ],

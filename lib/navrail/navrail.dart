@@ -128,8 +128,18 @@ class NavRail extends StatefulWidget {
   /// When true, shows a scrollable area for the navigation rail.
   final bool verticleScrolling;
 
+  /// The leading widget for the navigation rail.
+  ///
+  /// Applies when [expanded] is true.
   final Widget? leading;
+
+  /// The small leading widget for the navigation rail.
+  ///
+  /// Applies when [expanded] is false.
   final Widget? smallLeading;
+
+  /// Whether the leading widget is on the top is true.
+  final bool leadingOnTop;
 
   /// Creates a NavRail widget.
   ///
@@ -157,6 +167,7 @@ class NavRail extends StatefulWidget {
     this.verticleScrolling = false,
     this.leading,
     this.smallLeading,
+    this.leadingOnTop = false,
   });
 
   @override
@@ -324,6 +335,7 @@ class NavRailState extends State<NavRail> {
       }
     }
 
+    print('leadingOnTop: ${widget.leadingOnTop}');
     return Container(
       width: width,
       height: height,
@@ -332,6 +344,8 @@ class NavRailState extends State<NavRail> {
           ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (_expanded && widget.leadingOnTop) ?widget.leading,
+                if (!_expanded && widget.leadingOnTop) ?widget.smallLeading,
                 widget.expandable
                     ? InkWell(
                         onTap: _toggleExpanded,
@@ -353,8 +367,8 @@ class NavRailState extends State<NavRail> {
                         ),
                       )
                     : SizedBox.shrink(),
-                if (_expanded) ?widget.leading,
-                if (!_expanded) ?widget.smallLeading,
+                if (_expanded && !widget.leadingOnTop) ?widget.leading,
+                if (!_expanded && !widget.leadingOnTop) ?widget.smallLeading,
                 ...buttons,
                 if (moreButtons.isNotEmpty)
                   Container(
@@ -427,6 +441,8 @@ class NavRailState extends State<NavRail> {
           : Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (_expanded && widget.leadingOnTop) ?widget.leading,
+                if (!_expanded && widget.leadingOnTop) ?widget.smallLeading,
                 widget.expandable
                     ? InkWell(
                         onTap: _toggleExpanded,
@@ -455,8 +471,8 @@ class NavRailState extends State<NavRail> {
                         ),
                       )
                     : SizedBox.shrink(),
-                if (_expanded) ?widget.leading,
-                if (!_expanded) ?widget.smallLeading,
+                if (_expanded && !widget.leadingOnTop) ?widget.leading,
+                if (!_expanded && !widget.leadingOnTop) ?widget.smallLeading,
                 if (widget.verticleScrolling) ...[
                   Expanded(
                     child: SingleChildScrollView(
