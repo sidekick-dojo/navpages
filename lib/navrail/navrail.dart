@@ -323,7 +323,7 @@ class NavRailState extends State<NavRail> {
         .toList();
 
     if (widget.direction == NavRailDirection.horizontal) {
-      var count = (width ~/ buttonWidth) - (_expanded ? 2 : 1);
+      var count = (width ~/ buttonWidth) - (_expanded ? 2 : 3);
       if (count < 2) {
         count = 2;
       }
@@ -335,7 +335,6 @@ class NavRailState extends State<NavRail> {
       }
     }
 
-    print('leadingOnTop: ${widget.leadingOnTop}');
     return Container(
       width: width,
       height: height,
