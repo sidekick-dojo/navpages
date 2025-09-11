@@ -320,7 +320,7 @@ class NavRailState extends State<NavRail> {
               await entry.value.onTap?.call();
             },
             expanded: _expanded,
-            selected: entry.key == _selectedActionIndex,
+            // selected: entry.key == _selectedActionIndex,
             selectedColor: selectedColor,
             unselectedColor: unselectedColor,
             selectedBackgroundColor: selectedBackgroundColor,
