@@ -52,13 +52,13 @@ class NavPages extends StatefulWidget {
   ///
   /// These buttons control which page is displayed. Each button
   /// corresponds to a page in the [children] list.
-  final List<NavRailButton> buttons;
+  final List<NrButtonWidget> buttons;
 
   /// Additional action buttons for the navigation rail.
   ///
   /// These buttons are typically used for secondary actions like
   /// settings, help, or logout. They don't control page navigation.
-  final List<NavRailButton> actions;
+  final List<NrButtonWidget> actions;
 
   /// Whether the navigation rail can be expanded/collapsed.
   ///
@@ -239,8 +239,8 @@ class NavPages extends StatefulWidget {
 class NavPagesState extends State<NavPages> {
   int _selectedIndex = 0;
   int _selectedActionIndex = -1;
-  List<NavRailButton> _buttons = [];
-  List<NavRailButton> _actions = [];
+  List<NrButtonWidget> _buttons = [];
+  List<NrButtonWidget> _actions = [];
   final List<Widget> _history = [];
   final GlobalKey<NavRailState> _navRailKey = GlobalKey();
   NavPagesDirection _direction = NavPagesDirection.vertical;
@@ -404,8 +404,8 @@ class NavPagesState extends State<NavPages> {
   /// This method updates the buttons for the navigation rail using
   /// the [NavRailButtonsProvider].
   ///
-  /// The [buttons] parameter should be a list of [NavRailButton] widgets.
-  void setButtons(List<NavRailButton> buttons) {
+  /// The [buttons] parameter should be a list of [NrButtonWidget] widgets.
+  void setButtons(List<NrButtonWidget> buttons) {
     setState(() {
       _buttons = buttons;
     });
@@ -416,8 +416,8 @@ class NavPagesState extends State<NavPages> {
   /// This method updates the actions for the navigation rail using
   /// the [NavRailActionsProvider].
   ///
-  /// The [actions] parameter should be a list of [NavRailButton] widgets.
-  void setActions(List<NavRailButton> actions) {
+  /// The [actions] parameter should be a list of [NrButtonWidget] widgets.
+  void setActions(List<NrButtonWidget> actions) {
     _navRailKey.currentState?.setActions(actions);
   }
 
@@ -426,8 +426,8 @@ class NavPagesState extends State<NavPages> {
   /// This method updates the secondary actions for the navigation rail using
   /// the [NavRailActionsProvider].
   ///
-  /// The [actions] parameter should be a list of [NavRailButton] widgets.
-  void setSecondaryActions(List<NavRailButton> actions) {
+  /// The [actions] parameter should be a list of [NrButtonWidget] widgets.
+  void setSecondaryActions(List<NrButtonWidget> actions) {
     _navRailKey.currentState?.setSecondaryActions(actions);
   }
 

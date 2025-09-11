@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'nrbutton.dart';
 import 'navrail_button.dart';
 
 export 'navrail_button.dart';
+export 'nrbutton.dart';
 
 /// The direction in which the navigation rail is laid out.
 enum NavRailDirection {
@@ -34,12 +36,12 @@ class NavRail extends StatefulWidget {
   /// The buttons to display in the navigation rail.
   ///
   /// If null, uses the buttons from the [NavRailButtonsProvider].
-  final List<NavRailButton> buttons;
+  final List<NrButtonWidget> buttons;
 
   /// The actions to display in the navigation rail.
   ///
   /// If null, uses the actions from the [NavRailActionsProvider].
-  final List<NavRailButton> actions;
+  final List<NrButtonWidget> actions;
 
   /// The index of the currently selected action button.
   ///
@@ -191,9 +193,9 @@ class NavRailState extends State<NavRail> {
   bool _expanded = false;
   final _buttonsMenuController = MenuController();
   final _actionsMenuController = MenuController();
-  List<NavRailButton> _buttons = [];
-  List<NavRailButton> _actions = [];
-  List<NavRailButton> _secondaryActions = [];
+  List<NrButtonWidget> _buttons = [];
+  List<NrButtonWidget> _actions = [];
+  List<NrButtonWidget> _secondaryActions = [];
 
   @override
   void initState() {
@@ -281,7 +283,7 @@ class NavRailState extends State<NavRail> {
         )
         .toList();
 
-    final moreButtons = <NavRailButton>[];
+    final moreButtons = <NrButtonWidget>[];
 
     final actions = _actions
         .asMap()
@@ -517,7 +519,7 @@ class NavRailState extends State<NavRail> {
   /// the [NavRailActionsProvider].
   ///
   /// The [actions] parameter should be a list of [NavRailButton] widgets.
-  void setActions(List<NavRailButton> actions) {
+  void setActions(List<NrButtonWidget> actions) {
     setState(() {
       _actions = actions;
     });
@@ -529,7 +531,7 @@ class NavRailState extends State<NavRail> {
   /// the [NavRailActionsProvider].
   ///
   /// The [actions] parameter should be a list of [NavRailButton] widgets.
-  void setSecondaryActions(List<NavRailButton> actions) {
+  void setSecondaryActions(List<NrButtonWidget> actions) {
     setState(() {
       _secondaryActions = actions;
     });

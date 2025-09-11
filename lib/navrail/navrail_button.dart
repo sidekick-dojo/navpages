@@ -32,100 +32,27 @@ enum NavRailButtonLabelPosition {
 ///   onTap: () => print('Home tapped'),
 /// )
 /// ```
-class NavRailButton extends StatelessWidget {
-  /// The text label to display on the button.
-  ///
-  /// If null, only the icon will be shown. The label is typically
-  /// hidden when the button is not expanded.
-  final String? label;
-
-  /// The icon to display on the button.
-  ///
-  /// If null, only the label will be shown (if provided).
-  final IconData? icon;
-
-  /// The callback function to execute when the button is tapped.
-  final Function()? onTap;
-
-  /// Whether the button is in expanded state.
-  ///
-  /// When true, the label is visible. When false, only the icon
-  /// is shown (unless on mobile where labels may still be visible).
-  final bool expanded;
-
-  /// Whether the button is currently selected.
-  ///
-  /// Selected buttons typically have different colors to indicate
-  /// the current page or active state.
-  final bool selected;
-
-  /// The width of the button.
-  ///
-  /// If null or 0, uses default width based on expanded state.
-  final double? width;
-
-  /// The height of the button.
-  ///
-  /// If null or 0, uses default height based on expanded state.
-  final double? height;
-
-  /// The color to use when the button is selected.
-  ///
-  /// If null, uses theme-based colors.
-  final Color? selectedColor;
-
-  /// The background color to use when the button is selected.
-  ///
-  /// If null, uses theme-based colors.
-  final Color? selectedBackgroundColor;
-
-  /// The color to use when the button is not selected.
-  ///
-  /// If null, uses theme-based colors.
-  final Color? unselectedColor;
-
-  /// The background color to use when the button is not selected.
-  ///
-  /// If null, uses theme-based colors.
-  final Color? unselectedBackgroundColor;
-
-  /// The border radius for the button's background.
-  ///
-  /// If null, uses a default border radius of 4 pixels.
-  final BorderRadius? borderRadius;
-
-  /// The direction of the navigation rail this button belongs to.
-  ///
-  /// This affects the layout of the icon and label.
-  final NavRailDirection direction;
-
-  /// The position of the label relative to the icon.
-  ///
-  /// Defaults to [NavRailButtonLabelPosition.bottom] for vertical
-  /// navigation rails and [NavRailButtonLabelPosition.right] for
-  /// horizontal navigation rails.
-  final NavRailButtonLabelPosition labelPosition;
-
+class NavRailButton extends NrButtonWidget {
   /// Creates a NavRailButton widget.
   ///
   /// At least one of [label] or [icon] should be provided.
   /// The [onTap] callback is optional but typically provided.
   const NavRailButton({
     super.key,
-    this.label,
-    this.icon,
-    this.onTap,
-    this.expanded = false,
-    this.selected = false,
-    this.width = 0,
-    this.height = 0,
-    this.selectedColor,
-    this.selectedBackgroundColor,
-    this.unselectedBackgroundColor,
-    this.unselectedColor,
-    this.borderRadius,
-    this.direction = NavRailDirection.vertical,
-    this.labelPosition = NavRailButtonLabelPosition.bottom,
+    super.label,
+    super.icon,
+    super.onTap,
+    super.expanded = false,
+    super.selected = false,
+    super.width = 0,
+    super.height = 0,
+    super.selectedColor,
+    super.selectedBackgroundColor,
+    super.unselectedBackgroundColor,
+    super.unselectedColor,
+    super.borderRadius,
+    super.direction = NavRailDirection.vertical,
+    super.labelPosition = NavRailButtonLabelPosition.bottom,
   });
 
   @override
@@ -237,10 +164,11 @@ class NavRailButton extends StatelessWidget {
   /// button properties based on state changes (selected, expanded, etc.).
   ///
   /// All parameters are optional and will use the current values if not provided.
+  @override
   NavRailButton copyWith({
     String? label,
     IconData? icon,
-    VoidCallback? onTap,
+    Function()? onTap,
     bool? expanded,
     bool? selected,
     double? width,
@@ -250,8 +178,8 @@ class NavRailButton extends StatelessWidget {
     Color? unselectedColor,
     Color? unselectedBackgroundColor,
     BorderRadius? borderRadius,
-    NavRailButtonLabelPosition? labelPosition,
     NavRailDirection? direction,
+    NavRailButtonLabelPosition? labelPosition,
   }) => NavRailButton(
     label: label ?? this.label,
     icon: icon ?? this.icon,
