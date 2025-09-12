@@ -27,11 +27,16 @@ class NavPage extends StatelessWidget {
   /// and will fill the remaining space.
   final Widget? child;
 
+  /// Whether to display the page in fullscreen mode.
+  ///
+  /// If true, the page will be displayed in fullscreen mode.
+  final bool fullscreen;
+
   /// Creates a NavPage widget.
   ///
   /// The [child] parameter is optional but typically provided.
   /// The [navbar] parameter is also optional.
-  const NavPage({super.key, this.navbar, this.child});
+  const NavPage({super.key, this.navbar, this.child, this.fullscreen = false});
 
   @override
   Widget build(BuildContext context) {

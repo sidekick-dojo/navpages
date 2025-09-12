@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import '../navrail/navrail.dart';
 import 'navpage.dart';
@@ -40,7 +42,7 @@ class NavPages extends StatefulWidget {
   ///
   /// Each page corresponds to a button in the navigation rail.
   /// The number of children should match the number of buttons.
-  final List<NavPage> children;
+  final List<Widget> children;
 
   /// The direction in which the navigation is laid out.
   ///
@@ -125,6 +127,11 @@ class NavPages extends StatefulWidget {
   /// When true, the header is displayed above the navigation rail.
   final bool useFullHeader;
 
+  /// Whether to use the full screen.
+  ///
+  /// When true, the content is displayed in the full screen.
+  final bool fullscreen;
+
   /// Creates a NavPages widget.
   ///
   /// The [children] parameter is required and should contain the pages
@@ -149,6 +156,7 @@ class NavPages extends StatefulWidget {
     this.header,
     this.useFullHeader = false,
     this.navrailLeadingOnTop = false,
+    this.fullscreen = false,
   });
 
   @override
@@ -244,10 +252,12 @@ class NavPagesState extends State<NavPages> {
   final List<Widget> _history = [];
   final GlobalKey<NavRailState> _navRailKey = GlobalKey();
   NavPagesDirection _direction = NavPagesDirection.vertical;
+  bool _fullscreen = false;
 
   @override
   void initState() {
     super.initState();
+    _fullscreen = widget.fullscreen;
     _direction = widget.direction;
     _buttons = widget.buttons.asMap().entries.map((entry) {
       return entry.value.copyWith(
@@ -255,7 +265,7 @@ class NavPagesState extends State<NavPages> {
           setState(() {
             _selectedIndex = entry.key;
           });
-          pushReplacement(widget.children[entry.key].child!);
+          pushReplacement(widget.children[entry.key]);
           entry.value.onTap?.call();
         },
       );
@@ -270,7 +280,8 @@ class NavPagesState extends State<NavPages> {
         },
       );
     }).toList();
-    _history.add(widget.children[_selectedIndex].child!);
+    log('[initState] _history: $_history');
+    _history.add(widget.children[_selectedIndex]);
   }
 
   @override
@@ -282,6 +293,10 @@ class NavPagesState extends State<NavPages> {
     if (isMobile) {
       direction = NavPagesDirection.horizontal;
       expanded = false;
+    }
+
+    if (_fullscreen) {
+      return _history[_selectedIndex];
     }
 
     return direction == NavPagesDirection.vertical
@@ -459,13 +474,14 @@ class NavPagesState extends State<NavPages> {
   /// updates the selected index to the previous page.
   /// Does nothing if the history is empty.
   void pop() {
-    if (_history.isEmpty) {
+    if (_history.length <= 1) {
       return;
     }
     setState(() {
       _navRailKey.currentState?.setSecondaryActions([]);
       _history.removeLast();
       _selectedIndex = _history.length - 1;
+      _fullscreen = false;
     });
   }
 
@@ -476,8 +492,9 @@ class NavPagesState extends State<NavPages> {
   ///
   /// The [page] parameter should be a widget that represents
   /// the content to be displayed.
-  void push(Widget page) {
+  void push(Widget page, {bool fullscreen = false}) {
     setState(() {
+      _fullscreen = fullscreen;
       _navRailKey.currentState?.setSecondaryActions([]);
       _history.add(page);
       _selectedIndex = _history.length - 1;
@@ -490,12 +507,53 @@ class NavPagesState extends State<NavPages> {
   /// [page] as the only page in the stack. This is useful
   /// for scenarios like login/logout where you want to reset
   /// the navigation state.
-  void pushReplacement(Widget page) {
+  void pushReplacement(Widget page, {bool fullscreen = false}) {
     setState(() {
+      _fullscreen = fullscreen;
       _navRailKey.currentState?.setSecondaryActions([]);
       _history.clear();
       _history.add(page);
       _selectedIndex = _history.length - 1;
+    });
+  }
+
+  /// Toggles the fullscreen mode.
+  ///
+  /// This method toggles the fullscreen mode and updates the navigation
+  /// history accordingly.
+  ///
+  /// If the fullscreen mode is enabled, it removes the current page from
+  /// the history and pushes a new page with fullscreen mode enabled.
+  ///
+  /// If the fullscreen mode is disabled, it removes the current page from
+  /// the history and pushes a new page with fullscreen mode disabled.
+  void toggleFullscreen() {
+    !_fullscreen ? enterFullscreen() : exitFullscreen();
+  }
+
+  /// Enters the fullscreen mode.
+  ///
+  /// This method enters the fullscreen mode and updates the navigation
+  /// history accordingly.
+  ///
+  /// It removes the current page from the history and pushes a new page
+  /// with fullscreen mode enabled.
+  void enterFullscreen() {
+    setState(() {
+      _fullscreen = true;
+    });
+  }
+
+  /// Exits the fullscreen mode.
+  ///
+  /// This method exits the fullscreen mode and updates the navigation
+  /// history accordingly.
+  ///
+  /// It removes the current page from the history and pushes a new page
+  /// with fullscreen mode disabled.
+  void exitFullscreen() {
+    setState(() {
+      _fullscreen = false;
     });
   }
 }

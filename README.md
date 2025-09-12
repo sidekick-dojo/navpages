@@ -35,6 +35,9 @@ A flexible Flutter package for creating responsive navigation pages with integra
 - **📋 Header Support**: Optional header widget that can span the full width or be positioned above content
 - **📜 Scrollable Navigation**: Optional vertical scrolling for navigation rails with many items
 - **🔄 Secondary Actions**: Dynamic secondary action buttons that can be set programmatically
+- **🖥️ Fullscreen Mode**: Toggle fullscreen mode to remove chrome frame around pages for immersive experiences
+- **🔧 Custom Button Widgets**: NrButtonWidget class for creating custom navigation buttons with extended functionality
+- **🎨 Flexible Widget Support**: Accept any Widget type as children - NavPage, Scaffold, Container, or custom widgets for maximum flexibility
 
 ## Installation
 
@@ -42,7 +45,7 @@ Add NavPages to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  navpages: ^1.2.5
+  navpages: ^1.3.1
 ```
 
 Then run:
@@ -164,6 +167,226 @@ class SettingsContent extends StatelessWidget {
     );
   }
 }
+```
+
+## Widget Support for NavPages Children
+
+NavPages accepts any `Widget` type as children, providing maximum flexibility for your navigation structure. While `NavPage` is the recommended wrapper for most use cases, you can use any Flutter widget directly.
+
+### Supported Widget Types
+
+NavPages can handle any widget type in its `children` list:
+
+- **NavPage**: Recommended wrapper with optional navbar and fullscreen support
+- **StatelessWidget**: Any custom stateless widget
+- **StatefulWidget**: Any custom stateful widget  
+- **Scaffold**: Complete page structure with app bar, body, etc.
+- **Container**: Simple container widgets
+- **Column/Row**: Layout widgets
+- **ListView**: Scrollable content
+- **Custom Widgets**: Any widget you create
+
+### Using Different Widget Types
+
+#### Direct Widget Usage
+
+```dart
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+  ],
+  children: [
+    // Direct widget usage - no NavPage wrapper
+    const Center(
+      child: Text('Home Page Content'),
+    ),
+    
+    // Custom stateless widget
+    const ProfileWidget(),
+    
+    // Scaffold with complete page structure
+    Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: const SettingsContent(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.add),
+      ),
+    ),
+  ],
+)
+```
+
+#### Mixed Widget Types
+
+```dart
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Dashboard', icon: Icons.dashboard),
+    NavRailButton(label: 'Analytics', icon: Icons.analytics),
+    NavRailButton(label: 'Reports', icon: Icons.assessment),
+  ],
+  children: [
+    // NavPage with navbar
+    NavPage(
+      navbar: Navbar(title: 'Dashboard'),
+      child: const DashboardContent(),
+    ),
+    
+    // Direct Scaffold usage
+    Scaffold(
+      appBar: AppBar(
+        title: const Text('Analytics'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: const AnalyticsContent(),
+    ),
+    
+    // Simple container
+    Container(
+      padding: const EdgeInsets.all(16),
+      child: const ReportsContent(),
+    ),
+  ],
+)
+```
+
+### When to Use NavPage vs Direct Widgets
+
+#### Use NavPage When:
+- You want consistent navbar styling across pages
+- You need navbar functionality (title, actions, back button)
+- You want to leverage NavPages' built-in page structure
+- You need fullscreen mode support per page
+
+```dart
+NavPage(
+  navbar: Navbar(
+    title: 'My Page',
+    actions: [
+      IconButton(
+        icon: const Icon(Icons.settings),
+        onPressed: () {},
+      ),
+    ],
+  ),
+  child: const MyPageContent(),
+)
+```
+
+#### Use Direct Widgets When:
+- You have complete page structures (Scaffold, etc.)
+- You want full control over page layout
+- You're migrating existing pages
+- You need custom page behaviors
+
+```dart
+Scaffold(
+  appBar: AppBar(
+    title: const Text('Custom Page'),
+    backgroundColor: Colors.blue,
+    foregroundColor: Colors.white,
+  ),
+  body: const CustomPageContent(),
+  bottomNavigationBar: BottomNavigationBar(
+    items: const [
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+      BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+    ],
+  ),
+)
+```
+
+### Dynamic Widget Creation
+
+You can dynamically create widgets for NavPages children:
+
+```dart
+class DynamicNavPages extends StatefulWidget {
+  const DynamicNavPages({super.key});
+
+  @override
+  State<DynamicNavPages> createState() => _DynamicNavPagesState();
+}
+
+class _DynamicNavPagesState extends State<DynamicNavPages> {
+  final List<String> _pageTitles = ['Home', 'Profile', 'Settings'];
+  
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      buttons: _pageTitles.asMap().entries.map((entry) {
+        return NavRailButton(
+          label: entry.value,
+          icon: _getIconForPage(entry.value),
+        );
+      }).toList(),
+      children: _pageTitles.map((title) {
+        // Create different widget types based on page
+        switch (title) {
+          case 'Home':
+            return NavPage(
+              navbar: Navbar(title: title),
+              child: const HomeContent(),
+            );
+          case 'Profile':
+            return Scaffold(
+              appBar: AppBar(title: Text(title)),
+              body: const ProfileContent(),
+            );
+          case 'Settings':
+            return Container(
+              padding: const EdgeInsets.all(16),
+              child: const SettingsContent(),
+            );
+          default:
+            return const Center(child: Text('Unknown Page'));
+        }
+      }).toList(),
+    );
+  }
+  
+  IconData _getIconForPage(String title) {
+    switch (title) {
+      case 'Home': return Icons.home;
+      case 'Profile': return Icons.person;
+      case 'Settings': return Icons.settings;
+      default: return Icons.help;
+    }
+  }
+}
+```
+
+### Performance Considerations
+
+- **Widget Lifecycle**: All widgets in the children list are created when NavPages initializes
+- **Memory Usage**: Consider using `const` constructors for better performance
+- **State Management**: StatefulWidgets maintain their state across navigation
+- **Lazy Loading**: For heavy widgets, consider lazy initialization
+
+```dart
+// ✅ Good: Use const constructors
+NavPages(
+  children: [
+    const NavPage(child: HomeContent()), // const constructor
+    const NavPage(child: ProfileContent()), // const constructor
+  ],
+)
+
+// ❌ Avoid: Rebuilding on every navigation
+NavPages(
+  children: [
+    NavPage(child: HomeContent()), // Will rebuild unnecessarily
+    NavPage(child: ProfileContent()), // Will rebuild unnecessarily
+  ],
+)
 ```
 
 ## Basic Usage
@@ -724,6 +947,76 @@ NavPages(
 )
 ```
 
+### Fullscreen Mode
+
+Toggle fullscreen mode to remove the chrome frame around pages for immersive experiences:
+
+```dart
+NavPages(
+  // Enable fullscreen mode
+  fullscreen: true,
+  
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+    NavPage(child: const SettingsPage()),
+  ],
+)
+```
+
+**Key Points about Fullscreen Mode:**
+- Removes the chrome frame around pages for immersive experiences
+- Useful for presentations, media viewing, or focused work environments
+- Can be toggled programmatically using `NavPages.of(context).setFullscreen(bool)`
+- Works across all platforms (desktop, mobile, web)
+
+**Programmatic Fullscreen Control:**
+
+```dart
+class FullscreenExample extends StatelessWidget {
+  const FullscreenExample({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      buttons: [
+        NavRailButton(label: 'Home', icon: Icons.home),
+        NavRailButton(label: 'Profile', icon: Icons.person),
+      ],
+      children: [
+        NavPage(
+          navbar: Navbar(title: 'Home'),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Toggle fullscreen mode
+                  NavPages.of(context).enterFullscreen();
+                },
+                child: Text('Enter Fullscreen'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Exit fullscreen mode
+                  NavPages.of(context).exitFullscreen();
+                },
+                child: Text('Exit Fullscreen'),
+              ),
+            ],
+          ),
+        ),
+        NavPage(child: const ProfilePage()),
+      ],
+    );
+  }
+}
+```
+
 ### Dynamic Secondary Actions
 
 Use secondary actions that can be updated programmatically:
@@ -794,7 +1087,7 @@ The main widget that manages multiple pages and navigation. This is the core com
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `children` | `List<NavPage>` | `[]` | List of pages to display. Each page corresponds to a navigation button |
+| `children` | `List<Widget>` | `[]` | List of widgets to display. Each widget corresponds to a navigation button. Can be NavPage, Scaffold, or any other widget |
 | `buttons` | `List<NavRailButton>` | `[]` | Navigation buttons for the rail. Must match the order of `children` |
 | `actions` | `List<NavRailButton>?` | `null` | Optional action buttons (appear at bottom on desktop, in menu on mobile) |
 | `direction` | `NavPagesDirection` | `NavPagesDirection.vertical` | Layout direction (horizontal/vertical) |
@@ -811,6 +1104,7 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `navrailLeadingOnTop` | `bool` | `false` | Whether leading widgets appear at the top of the navigation rail |
 | `header` | `Widget?` | `null` | Optional header widget for the site |
 | `useFullHeader` | `bool` | `false` | Whether to use full header when direction is vertical |
+| `fullscreen` | `bool` | `false` | Whether to enable fullscreen mode (removes chrome frame) |
 
 #### Static Methods
 
@@ -834,11 +1128,12 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `pop()` | Pop current page from stack | None | `void` |
 | `canPop()` | Check if navigation can pop | None | `bool` |
 | `pushReplacement(Widget page)` | Replace current page | `page` - Widget to replace with | `void` |
+| `setFullscreen(bool fullscreen)` | Toggle fullscreen mode | `fullscreen` - Whether to enable fullscreen | `void` |
 
 #### Example Usage
 
 ```dart
-// Basic usage
+// Basic usage with NavPage
 NavPages(
   buttons: [
     NavRailButton(label: 'Home', icon: Icons.home),
@@ -847,6 +1142,21 @@ NavPages(
   children: [
     NavPage(child: const HomePage()),
     NavPage(child: const ProfilePage()),
+  ],
+)
+
+// Mixed widget types
+NavPages(
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+  ],
+  children: [
+    NavPage(navbar: Navbar(title: 'Home'), child: const HomePage()),
+    Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: const SettingsPage(),
+    ),
   ],
 )
 
@@ -907,9 +1217,136 @@ NavPage(
 )
 ```
 
+### NrButtonWidget
+
+A base widget class for creating custom navigation buttons. NavRailButton extends this class to provide the standard navigation button functionality.
+
+#### Constructor Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `label` | `String?` | `null` | Button label text (shown when expanded) |
+| `icon` | `IconData?` | `null` | Button icon |
+| `onTap` | `Function()?` | `null` | Tap callback function |
+| `expanded` | `bool` | `false` | Whether the button is in expanded state |
+| `selected` | `bool` | `false` | Whether the button is currently selected |
+| `width` | `double?` | `null` | Custom width override |
+| `height` | `double?` | `null` | Custom height override |
+| `selectedColor` | `Color?` | `null` | Color when selected (uses theme if null) |
+| `selectedBackgroundColor` | `Color?` | `null` | Background color when selected |
+| `unselectedColor` | `Color?` | `null` | Color when not selected (uses theme if null) |
+| `unselectedBackgroundColor` | `Color?` | `null` | Background color when not selected |
+| `labelPosition` | `NavRailButtonLabelPosition` | `NavRailButtonLabelPosition.right` | Position of label relative to icon |
+
+#### Example Usage
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:navpages/navrail/navrail.dart';
+
+// Create a custom button extending NrButtonWidget
+class CustomNavButton extends NrButtonWidget {
+  const CustomNavButton({
+    super.key,
+    required super.label,
+    required super.icon,
+    super.onTap,
+    super.expanded,
+    super.selected,
+    super.width,
+    super.height,
+    super.selectedColor,
+    super.selectedBackgroundColor,
+    super.unselectedColor,
+    super.unselectedBackgroundColor,
+    super.labelPosition,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width ?? 60,
+      height: height ?? 60,
+      decoration: BoxDecoration(
+        color: selected ? selectedBackgroundColor : unselectedBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: selected ? Border.all(color: selectedColor ?? Colors.blue) : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Center(
+            child: Icon(
+              icon,
+              color: selected ? selectedColor : unselectedColor,
+              size: 24,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  CustomNavButton copyWith({
+    String? label,
+    IconData? icon,
+    Function()? onTap,
+    bool? expanded,
+    bool? selected,
+    double? width,
+    double? height,
+    Color? selectedColor,
+    Color? selectedBackgroundColor,
+    Color? unselectedColor,
+    Color? unselectedBackgroundColor,
+    BorderRadius? borderRadius,
+    NavRailDirection? direction,
+    NavRailButtonLabelPosition? labelPosition,
+  }) => CustomNavButton(
+    label: label ?? this.label,
+    icon: icon ?? this.icon,
+    onTap: onTap ?? this.onTap,
+    expanded: expanded ?? this.expanded,
+    selected: selected ?? this.selected,
+    width: width ?? this.width,
+    height: height ?? this.height,
+    selectedColor: selectedColor ?? this.selectedColor,
+    selectedBackgroundColor:
+        selectedBackgroundColor ?? this.selectedBackgroundColor,
+    unselectedColor: unselectedColor ?? this.unselectedColor,
+    unselectedBackgroundColor:
+        unselectedBackgroundColor ?? this.unselectedBackgroundColor,
+    borderRadius: borderRadius ?? this.borderRadius,
+    labelPosition: labelPosition ?? this.labelPosition,
+    key: key,
+    direction: direction ?? this.direction,
+  );
+}
+
+// Use the custom button
+NavPages(
+  buttons: [
+    CustomNavButton(
+      label: 'Custom Home',
+      icon: Icons.home,
+      selectedColor: Colors.amber,
+      selectedBackgroundColor: Colors.amber.withOpacity(0.2),
+    ),
+    NavRailButton(label: 'Standard', icon: Icons.star),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const StandardPage()),
+  ],
+)
+```
+
 ### NavRailButton
 
-A button component for the navigation rail. Provides customizable appearance and behavior.
+A button component for the navigation rail. Provides customizable appearance and behavior. Extends NrButtonWidget for enhanced functionality.
 
 #### Constructor Properties
 
@@ -1496,6 +1933,63 @@ If you're still experiencing issues:
 
 This guide helps you migrate between different versions of NavPages.
 
+### Migrating to v1.3.1
+
+#### New Features
+
+1. **Fullscreen Mode**: Added fullscreen functionality for immersive experiences
+   - `fullscreen`: Property to enable fullscreen mode
+   - `setFullscreen(bool)`: Method to toggle fullscreen mode programmatically
+   - Removes chrome frame around pages for presentations and focused work
+
+#### Migration Steps
+
+1. **Update Package Version**:
+   ```yaml
+   dependencies:
+     navpages: ^1.3.1
+   ```
+
+2. **Add Fullscreen Support** (optional):
+   - Enable fullscreen mode for immersive experiences
+   - Add programmatic fullscreen controls where needed
+
+3. **Test Thoroughly**:
+   - Test fullscreen functionality across platforms
+   - Verify navigation works correctly in fullscreen mode
+   - Check responsive behavior with fullscreen enabled
+
+### Migrating to v1.3.0
+
+#### New Features
+
+1. **NrButtonWidget Class**: Added base class for custom navigation buttons
+   - `NrButtonWidget`: Base widget class for creating custom navigation buttons
+   - `NavRailButton` now extends `NrButtonWidget` for enhanced functionality
+   - Enables creation of custom button widgets with extended capabilities
+
+2. **Enhanced Button System**: Improved button architecture
+   - Better extensibility for custom button implementations
+   - Consistent API across all button types
+   - Enhanced customization options
+
+#### Migration Steps
+
+1. **Update Package Version**:
+   ```yaml
+   dependencies:
+     navpages: ^1.3.0
+   ```
+
+2. **Create Custom Buttons** (optional):
+   - Extend `NrButtonWidget` for custom button implementations
+   - Take advantage of enhanced button architecture
+
+3. **Test Thoroughly**:
+   - Test existing button functionality
+   - Verify custom button implementations work correctly
+   - Check button styling and behavior
+
 ### Migrating to v1.2.5
 
 #### New Features
@@ -1645,6 +2139,8 @@ NavPages(
 
 | NavPages Version | Flutter Version | Dart Version |
 |------------------|-----------------|--------------|
+| 1.3.1 | >=1.17.0 | ^3.9.0 |
+| 1.3.0 | >=1.17.0 | ^3.9.0 |
 | 1.2.5 | >=1.17.0 | ^3.9.0 |
 | 1.2.x | >=1.17.0 | ^3.9.0 |
 | 1.1.x | >=1.17.0 | ^3.0.0 |
@@ -1689,6 +2185,9 @@ Check out the `example/` directory for complete sample applications demonstratin
 - **Header Support**: Site-wide header functionality
 - **Scrollable Navigation**: Vertical scrolling for many navigation items
 - **Dynamic Secondary Actions**: Context-specific temporary actions
+- **Fullscreen Mode**: Immersive fullscreen experience
+- **Custom Button Widgets**: Extended button functionality with NrButtonWidget
+- **Flexible Widget Support**: Mixed widget types (NavPage, Scaffold, Container) in navigation
 
 ## Contributing
 
