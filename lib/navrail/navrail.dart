@@ -34,13 +34,9 @@ enum NavRailDirection {
 /// ```
 class NavRail extends StatefulWidget {
   /// The buttons to display in the navigation rail.
-  ///
-  /// If null, uses the buttons from the [NavRailButtonsProvider].
   final List<NrButtonWidget> buttons;
 
   /// The actions to display in the navigation rail.
-  ///
-  /// If null, uses the actions from the [NavRailActionsProvider].
   final List<NrButtonWidget> actions;
 
   /// The index of the currently selected action button.
@@ -515,9 +511,6 @@ class NavRailState extends State<NavRail> {
 
   /// Sets the actions for the navigation rail.
   ///
-  /// This method updates the actions for the navigation rail using
-  /// the [NavRailActionsProvider].
-  ///
   /// The [actions] parameter should be a list of [NavRailButton] widgets.
   void setActions(List<NrButtonWidget> actions) {
     setState(() {
@@ -526,9 +519,6 @@ class NavRailState extends State<NavRail> {
   }
 
   /// Sets the secondary actions for the navigation rail.
-  ///
-  /// This method updates the secondary actions for the navigation rail using
-  /// the [NavRailActionsProvider].
   ///
   /// The [actions] parameter should be a list of [NavRailButton] widgets.
   void setSecondaryActions(List<NrButtonWidget> actions) {

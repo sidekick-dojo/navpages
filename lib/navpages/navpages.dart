@@ -42,6 +42,8 @@ class NavPages extends StatefulWidget {
   ///
   /// Each page corresponds to a button in the navigation rail.
   /// The number of children should match the number of buttons.
+  ///
+  /// The preferred type is [NavPage].
   final List<Widget> children;
 
   /// The direction in which the navigation is laid out.
@@ -250,6 +252,7 @@ class NavPagesState extends State<NavPages> {
   List<NrButtonWidget> _buttons = [];
   List<NrButtonWidget> _actions = [];
   final List<Widget> _history = [];
+  final List<Widget> _dynamicHistory = [];
   final GlobalKey<NavRailState> _navRailKey = GlobalKey();
   NavPagesDirection _direction = NavPagesDirection.vertical;
   bool _fullscreen = false;
@@ -416,9 +419,6 @@ class NavPagesState extends State<NavPages> {
 
   /// Sets the buttons for the navigation rail.
   ///
-  /// This method updates the buttons for the navigation rail using
-  /// the [NavRailButtonsProvider].
-  ///
   /// The [buttons] parameter should be a list of [NrButtonWidget] widgets.
   void setButtons(List<NrButtonWidget> buttons) {
     setState(() {
@@ -428,18 +428,12 @@ class NavPagesState extends State<NavPages> {
 
   /// Sets the actions for the navigation rail.
   ///
-  /// This method updates the actions for the navigation rail using
-  /// the [NavRailActionsProvider].
-  ///
   /// The [actions] parameter should be a list of [NrButtonWidget] widgets.
   void setActions(List<NrButtonWidget> actions) {
     _navRailKey.currentState?.setActions(actions);
   }
 
   /// Sets the secondary actions for the navigation rail.
-  ///
-  /// This method updates the secondary actions for the navigation rail using
-  /// the [NavRailActionsProvider].
   ///
   /// The [actions] parameter should be a list of [NrButtonWidget] widgets.
   void setSecondaryActions(List<NrButtonWidget> actions) {
@@ -481,7 +475,12 @@ class NavPagesState extends State<NavPages> {
       _navRailKey.currentState?.setSecondaryActions([]);
       _history.removeLast();
       _selectedIndex = _history.length - 1;
-      _fullscreen = false;
+      if (_dynamicHistory.length > 1) {
+        _dynamicHistory.removeLast();
+      } else if (_dynamicHistory.length == 1) {
+        _dynamicHistory.clear();
+        _fullscreen = false;
+      }
     });
   }
 
@@ -494,7 +493,13 @@ class NavPagesState extends State<NavPages> {
   /// the content to be displayed.
   void push(Widget page, {bool fullscreen = false}) {
     setState(() {
-      _fullscreen = fullscreen;
+      if (_fullscreen || fullscreen) {
+        _dynamicHistory.add(page);
+        _fullscreen = true;
+      }
+      if (_dynamicHistory.isEmpty) {
+        _fullscreen = false;
+      }
       _navRailKey.currentState?.setSecondaryActions([]);
       _history.add(page);
       _selectedIndex = _history.length - 1;
@@ -509,7 +514,14 @@ class NavPagesState extends State<NavPages> {
   /// the navigation state.
   void pushReplacement(Widget page, {bool fullscreen = false}) {
     setState(() {
-      _fullscreen = fullscreen;
+      _dynamicHistory.clear();
+      if (_fullscreen || fullscreen) {
+        _dynamicHistory.add(page);
+        _fullscreen = true;
+      }
+      if (_dynamicHistory.isEmpty) {
+        _fullscreen = false;
+      }
       _navRailKey.currentState?.setSecondaryActions([]);
       _history.clear();
       _history.add(page);
@@ -539,7 +551,12 @@ class NavPagesState extends State<NavPages> {
   /// It removes the current page from the history and pushes a new page
   /// with fullscreen mode enabled.
   void enterFullscreen() {
+    if (_fullscreen) {
+      return;
+    }
+    final page = _history[_selectedIndex];
     setState(() {
+      _dynamicHistory.add(page);
       _fullscreen = true;
     });
   }
@@ -553,6 +570,7 @@ class NavPagesState extends State<NavPages> {
   /// with fullscreen mode disabled.
   void exitFullscreen() {
     setState(() {
+      _dynamicHistory.clear();
       _fullscreen = false;
     });
   }

@@ -972,7 +972,7 @@ NavPages(
 **Key Points about Fullscreen Mode:**
 - Removes the chrome frame around pages for immersive experiences
 - Useful for presentations, media viewing, or focused work environments
-- Can be toggled programmatically using `NavPages.of(context).setFullscreen(bool)`
+- Can be toggled programmatically using `NavPages.of(context).toggleFullscreen()`
 - Works across all platforms (desktop, mobile, web)
 
 **Programmatic Fullscreen Control:**
@@ -2179,7 +2179,7 @@ Check out the `example/` directory for complete sample applications demonstratin
 - **Expandable Navigation**: Collapsible navigation rail
 - **Action Buttons**: Secondary actions in navigation
 - **Custom Styling**: Themed navigation bars and buttons
-- **Programmatic Navigation**: Using `NavPages.push()` and `NavPages.pop()`
+- **Programmatic Navigation**: Using `NavPages.push()`, `NavPages.pushReplacement()`, and `NavPages.pop()`
 - **Responsive Design**: Automatic adaptation to screen sizes
 - **Leading Widgets**: Custom leading widgets for branding
 - **Header Support**: Site-wide header functionality

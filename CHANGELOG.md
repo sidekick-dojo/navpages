@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.1] - 2025-09-12
+
+## [1.4.0] - 2025-09-12
+
+### Added
+- Support for NavPages `pop`, `push`, and `pushReplacement` now support total fullscreen mode when toggled
+
+### Fixed
+- `NavPages.pop()` no longer exits fullscreen mode by default
+
+## [1.3.11] - 2025-09-12
 
 ### Added
 - Fullscreen mode to remove chrome frame around page
