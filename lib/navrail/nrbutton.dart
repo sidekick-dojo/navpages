@@ -29,6 +29,11 @@ abstract class NrButtonWidget extends StatelessWidget {
   /// the current page or active state.
   final bool selected;
 
+  /// Whether to display when selected.
+  ///
+  /// When true, the selected button is displayed. When false, the button is not displayed.
+  final bool showSelected;
+
   /// The width of the button.
   ///
   /// If null or 0, uses default width based on expanded state.
@@ -83,6 +88,7 @@ abstract class NrButtonWidget extends StatelessWidget {
     this.onTap,
     this.expanded = false,
     this.selected = false,
+    this.showSelected = true,
     this.width,
     this.height,
     this.selectedColor,
@@ -100,6 +106,7 @@ abstract class NrButtonWidget extends StatelessWidget {
     Function()? onTap,
     bool? expanded,
     bool? selected,
+    bool? showSelected,
     double? width,
     double? height,
     Color? selectedColor,

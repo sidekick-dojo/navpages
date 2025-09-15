@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-09-15
+
+### Added
+- Position NavRail to `top`, `bottom`, `left`, `right` for NavPages
+- Dynamically set the NavRail position for NavPages
+- Support for `footer` inclusion for NavPages
+- `useFullFooter` to push the footer below the NavRail for NavPages
+- Dynamically enable, disable, or toggle `useFullHeader` for NavPages
+- Dynamically enable, disable, or toggle `useFullFooter` for NavPages
+- Support for showing or hiding the selected action for NavRail, via NavPages or directly
+- Support for showing or hiding the selected secondary action for NavRail, via NavPages or directly
+- Dynamically enable, disable, or toggle `showActionSelectionIndex` for NavPages
+- Dynamically enable, disable, or toggle `showSecondaryActionSelectedIndex` for NavPages
+
+### Fixed
+- Simplified the build layout logic for NavPages
+- Support to get `fullscreen` status for NavPages
+- Secondary actions no longer display selected when equal to the selected action index
+- Layout bug where NavPage was not properly sized
+
 ## [1.4.1] - 2025-09-12
 
 ### Updated

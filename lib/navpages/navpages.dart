@@ -17,6 +17,20 @@ enum NavPagesDirection {
   vertical,
 }
 
+enum NavPagesRailPosition {
+  /// Left side (typically used for desktop)
+  left,
+
+  /// Right side (typically used for desktop)
+  right,
+
+  /// Top side (typically used for mobile)
+  top,
+
+  /// Bottom side (typically used for mobile)
+  bottom,
+}
+
 /// A widget that manages multiple pages with integrated navigation controls.
 ///
 /// NavPages provides a complete solution for managing multiple pages with
@@ -51,6 +65,12 @@ class NavPages extends StatefulWidget {
   /// Defaults to [NavPagesDirection.vertical] for desktop layouts.
   /// Automatically switches to horizontal on mobile devices.
   final NavPagesDirection direction;
+
+  /// The position of the navigation rail.
+  ///
+  /// Defaults to [NavPagesRailPosition.left] for desktop layouts.
+  /// Automatically switches to [NavPagesRailPosition.top] on mobile devices.
+  final NavPagesRailPosition navrailPosition;
 
   /// The navigation buttons for the rail.
   ///
@@ -120,19 +140,40 @@ class NavPages extends StatefulWidget {
 
   /// The header widget for the site.
   ///
-  /// Shows above the content when direction is vertical; above the
-  /// navigation rail when direction is horizontal.
+  /// The display is dependent on [useFullHeader]; above the content when [useFullHeader] is false; above the
+  /// everything when [useFullHeader] is true.
   final Widget? header;
 
   /// Whether to use the full header when direction is vertical.
   ///
-  /// When true, the header is displayed above the navigation rail.
+  /// When true, the header is displayed above everything.
   final bool useFullHeader;
+
+  /// The footer widget for the site.
+  ///
+  /// The display is dependent on [useFullFooter]; below the content when [useFullFooter] is false; below the
+  /// everything when [useFullFooter] is true.
+  final Widget? footer;
+
+  /// Whether to use the full footer when direction is vertical.
+  ///
+  /// When true, the footer is displayed below everything.
+  final bool useFullFooter;
 
   /// Whether to use the full screen.
   ///
   /// When true, the content is displayed in the full screen.
   final bool fullscreen;
+
+  /// Whether to show the selected action index.
+  ///
+  /// When true, the selected action index is displayed.
+  final bool showActionSelectedIndex;
+
+  /// Whether to show the selected secondary action index.
+  ///
+  /// When true, the selected secondary action index is displayed.
+  final bool showSecondaryActionSelectedIndex;
 
   /// Creates a NavPages widget.
   ///
@@ -143,6 +184,7 @@ class NavPages extends StatefulWidget {
     super.key,
     this.children = const [],
     this.direction = NavPagesDirection.vertical,
+    this.navrailPosition = NavPagesRailPosition.left,
     this.buttons = const [],
     this.actions = const [],
     this.expandable = false,
@@ -157,8 +199,12 @@ class NavPages extends StatefulWidget {
     this.navrailSmallLeading,
     this.header,
     this.useFullHeader = false,
+    this.footer,
+    this.useFullFooter = false,
     this.navrailLeadingOnTop = false,
     this.fullscreen = false,
+    this.showActionSelectedIndex = true,
+    this.showSecondaryActionSelectedIndex = true,
   });
 
   @override
@@ -255,13 +301,23 @@ class NavPagesState extends State<NavPages> {
   final List<Widget> _dynamicHistory = [];
   final GlobalKey<NavRailState> _navRailKey = GlobalKey();
   NavPagesDirection _direction = NavPagesDirection.vertical;
+  NavPagesRailPosition _position = NavPagesRailPosition.left;
   bool _fullscreen = false;
+  bool _headerFullscreen = false;
+  bool _footerFullscreen = false;
+  bool _showActionSelectedIndex = true;
+  bool _showSecondaryActionSelectedIndex = true;
 
   @override
   void initState() {
     super.initState();
     _fullscreen = widget.fullscreen;
     _direction = widget.direction;
+    _position = widget.navrailPosition;
+    _headerFullscreen = widget.useFullHeader;
+    _footerFullscreen = widget.useFullFooter;
+    _showActionSelectedIndex = widget.showActionSelectedIndex;
+    _showSecondaryActionSelectedIndex = widget.showSecondaryActionSelectedIndex;
     _buttons = widget.buttons.asMap().entries.map((entry) {
       return entry.value.copyWith(
         onTap: () {
@@ -302,117 +358,96 @@ class NavPagesState extends State<NavPages> {
       return _history[_selectedIndex];
     }
 
+    final navRail = NavRail(
+      key: _navRailKey,
+      direction: _direction == NavPagesDirection.vertical
+          ? NavRailDirection.vertical
+          : NavRailDirection.horizontal,
+      buttons: _buttons,
+      actions: _actions,
+      expandable: widget.expandable,
+      expanded: expanded,
+      expandableButtonHeight: widget.expandableButtonHeight,
+      selectedActionIndex: _selectedActionIndex,
+      showActionSelectedIndex: _showActionSelectedIndex,
+      showSecondaryActionSelectedIndex: _showSecondaryActionSelectedIndex,
+      minWidth: widget.navrailMinWidth,
+      maxWidth: widget.navrailMaxWidth,
+      minHeight: widget.navrailMinHeight,
+      maxHeight: widget.navrailMaxHeight,
+      verticleScrolling: widget.navrailVerticleScrolling,
+      leading: widget.navrailLeading,
+      smallLeading: widget.navrailSmallLeading,
+      leadingOnTop: widget.navrailLeadingOnTop,
+    );
+
     return direction == NavPagesDirection.vertical
-        ? widget.header != null
-              ? widget.useFullHeader
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          widget.header!,
-                          Expanded(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                NavRail(
-                                  key: _navRailKey,
-                                  direction: NavRailDirection.vertical,
-                                  buttons: _buttons,
-                                  actions: _actions,
-                                  expandable: widget.expandable,
-                                  expanded: expanded,
-                                  expandableButtonHeight:
-                                      widget.expandableButtonHeight,
-                                  selectedActionIndex: _selectedActionIndex,
-                                  minWidth: widget.navrailMinWidth,
-                                  maxWidth: widget.navrailMaxWidth,
-                                  minHeight: widget.navrailMinHeight,
-                                  maxHeight: widget.navrailMaxHeight,
-                                  verticleScrolling:
-                                      widget.navrailVerticleScrolling,
-                                  leading: widget.navrailLeading,
-                                  smallLeading: widget.navrailSmallLeading,
-                                  leadingOnTop: widget.navrailLeadingOnTop,
-                                ),
-                                Expanded(child: _history[_selectedIndex]),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          NavRail(
-                            key: _navRailKey,
-                            direction: NavRailDirection.vertical,
-                            buttons: _buttons,
-                            actions: _actions,
-                            expandable: widget.expandable,
-                            expanded: expanded,
-                            expandableButtonHeight:
-                                widget.expandableButtonHeight,
-                            selectedActionIndex: _selectedActionIndex,
-                            minWidth: widget.navrailMinWidth,
-                            maxWidth: widget.navrailMaxWidth,
-                            minHeight: widget.navrailMinHeight,
-                            maxHeight: widget.navrailMaxHeight,
-                            verticleScrolling: widget.navrailVerticleScrolling,
-                            leading: widget.navrailLeading,
-                            smallLeading: widget.navrailSmallLeading,
-                            leadingOnTop: widget.navrailLeadingOnTop,
-                          ),
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                widget.header!,
-                                Expanded(child: _history[_selectedIndex]),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-              : Row(
+        ? _headerFullscreen || _footerFullscreen
+              ? Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    NavRail(
-                      key: _navRailKey,
-                      direction: NavRailDirection.vertical,
-                      buttons: _buttons,
-                      actions: _actions,
-                      expandable: widget.expandable,
-                      expanded: expanded,
-                      expandableButtonHeight: widget.expandableButtonHeight,
-                      selectedActionIndex: _selectedActionIndex,
-                      minWidth: widget.navrailMinWidth,
-                      maxWidth: widget.navrailMaxWidth,
-                      minHeight: widget.navrailMinHeight,
-                      maxHeight: widget.navrailMaxHeight,
-                      verticleScrolling: widget.navrailVerticleScrolling,
-                      leading: widget.navrailLeading,
-                      smallLeading: widget.navrailSmallLeading,
-                      leadingOnTop: widget.navrailLeadingOnTop,
+                    ?widget.header,
+                    Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_position == NavPagesRailPosition.left ||
+                              _position == NavPagesRailPosition.top)
+                            navRail,
+                          !_footerFullscreen
+                              ? Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Expanded(child: _history[_selectedIndex]),
+                                      ?widget.footer,
+                                    ],
+                                  ),
+                                )
+                              : Expanded(child: _history[_selectedIndex]),
+                          if (_position == NavPagesRailPosition.right ||
+                              _position == NavPagesRailPosition.bottom)
+                            navRail,
+                        ],
+                      ),
                     ),
-                    Expanded(child: _history[_selectedIndex]),
+                    if (_footerFullscreen) ?widget.footer,
+                  ],
+                )
+              : Row(
+                  children: [
+                    if (_position == NavPagesRailPosition.left ||
+                        _position == NavPagesRailPosition.top)
+                      navRail,
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ?widget.header,
+                          Expanded(child: _history[_selectedIndex]),
+                          ?widget.footer,
+                        ],
+                      ),
+                    ),
+                    if (_position == NavPagesRailPosition.right ||
+                        _position == NavPagesRailPosition.bottom)
+                      navRail,
                   ],
                 )
         : Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ?widget.header,
-              NavRail(
-                key: _navRailKey,
-                direction: NavRailDirection.horizontal,
-                buttons: _buttons,
-                actions: _actions,
-                expandable: widget.expandable,
-                expanded: expanded,
-                expandableButtonHeight: widget.expandableButtonHeight,
-                selectedActionIndex: _selectedActionIndex,
-                leading: widget.navrailLeading,
-                smallLeading: widget.navrailSmallLeading,
-                leadingOnTop: widget.navrailLeadingOnTop,
-              ),
+              if (_headerFullscreen) ?widget.header,
+              if (_position == NavPagesRailPosition.left ||
+                  _position == NavPagesRailPosition.top)
+                navRail,
+              if (!_headerFullscreen) ?widget.header,
               Expanded(child: _history[_selectedIndex]),
+              if (!_footerFullscreen) ?widget.footer,
+              if (_position == NavPagesRailPosition.right ||
+                  _position == NavPagesRailPosition.bottom)
+                navRail,
+              if (_footerFullscreen) ?widget.footer,
             ],
           );
   }
@@ -452,7 +487,34 @@ class NavPagesState extends State<NavPages> {
     });
   }
 
+  /// Returns the [NavPagesDirection] for the navigation pages.
   NavPagesDirection get direction => _direction;
+
+  /// Sets the position for the navigation pages.
+  ///
+  /// The [position] parameter should be a [NavPagesRailPosition] enum.
+  void setPosition(NavPagesRailPosition position) {
+    setState(() {
+      _position = position;
+      switch (position) {
+        case NavPagesRailPosition.left:
+          _direction = NavPagesDirection.vertical;
+          break;
+        case NavPagesRailPosition.right:
+          _direction = NavPagesDirection.vertical;
+          break;
+        case NavPagesRailPosition.top:
+          _direction = NavPagesDirection.horizontal;
+          break;
+        case NavPagesRailPosition.bottom:
+          _direction = NavPagesDirection.horizontal;
+          break;
+      }
+    });
+  }
+
+  /// Returns the [NavPagesRailPosition] for the navigation pages.
+  NavPagesRailPosition get position => _position;
 
   /// Returns whether the navigation stack can be popped.
   ///
@@ -574,4 +636,100 @@ class NavPagesState extends State<NavPages> {
       _fullscreen = false;
     });
   }
+
+  /// Returns the [bool]fullscreen state for the navigation pages..
+  bool get fullscreen => _fullscreen;
+
+  /// Toggles the header fullscreen mode.
+  void toggleHeaderFullscreen() {
+    _headerFullscreen ? disableHeaderFullscreen() : enableHeaderFullscreen();
+  }
+
+  /// Enables the header fullscreen mode.
+  void enableHeaderFullscreen() {
+    setState(() {
+      _headerFullscreen = true;
+    });
+  }
+
+  /// Disables the header fullscreen mode.
+  void disableHeaderFullscreen() {
+    setState(() {
+      _headerFullscreen = false;
+    });
+  }
+
+  /// Returns the [bool] header fullscreen state for the navigation pages.
+  bool get headerFullscreen => _headerFullscreen;
+
+  /// Toggles the footer fullscreen mode.
+  void toggleFooterFullscreen() {
+    _footerFullscreen ? disableFooterFullscreen() : enableFooterFullscreen();
+  }
+
+  /// Enables the footer fullscreen mode.
+  void enableFooterFullscreen() {
+    setState(() {
+      _footerFullscreen = true;
+    });
+  }
+
+  /// Disables the footer fullscreen mode.
+  void disableFooterFullscreen() {
+    setState(() {
+      _footerFullscreen = false;
+    });
+  }
+
+  /// Returns the [bool] footer fullscreen state for the navigation pages.
+  bool get footerFullscreen => _footerFullscreen;
+
+  /// Toggles the action selected index.
+  void toggleActionSelectedIndex() {
+    _showActionSelectedIndex
+        ? disableActionSelectedIndex()
+        : enableActionSelectedIndex();
+  }
+
+  /// Enables the action selected index.
+  void enableActionSelectedIndex() {
+    setState(() {
+      _showActionSelectedIndex = true;
+    });
+  }
+
+  /// Disables the action selected index.
+  void disableActionSelectedIndex() {
+    setState(() {
+      _showActionSelectedIndex = false;
+    });
+  }
+
+  /// Returns the [bool] action selected index state for the navigation pages.
+  bool get showActionSelectedIndex => _showActionSelectedIndex;
+
+  /// Toggles the secondary action selected index.
+  void toggleSecondaryActionSelectedIndex() {
+    _showSecondaryActionSelectedIndex
+        ? disableSecondaryActionSelectedIndex()
+        : enableSecondaryActionSelectedIndex();
+  }
+
+  /// Enables the secondary action selected index.
+  void enableSecondaryActionSelectedIndex() {
+    setState(() {
+      _showSecondaryActionSelectedIndex = true;
+    });
+  }
+
+  /// Disables the secondary action selected index.
+  void disableSecondaryActionSelectedIndex() {
+    setState(() {
+      _showSecondaryActionSelectedIndex = false;
+    });
+  }
+
+  /// Returns the [bool] secondary action selected index state for the navigation pages.
+  bool get showSecondaryActionSelectedIndex =>
+      _showSecondaryActionSelectedIndex;
 }

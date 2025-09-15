@@ -44,6 +44,7 @@ class NavRailButton extends NrButtonWidget {
     super.onTap,
     super.expanded = false,
     super.selected = false,
+    super.showSelected = true,
     super.width = 0,
     super.height = 0,
     super.selectedColor,
@@ -57,7 +58,7 @@ class NavRailButton extends NrButtonWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = selected
+    final backgroundColor = (selected && showSelected)
         ? selectedBackgroundColor
         : unselectedBackgroundColor;
     final tooltipBackgroundColor = Color.lerp(
@@ -138,7 +139,7 @@ class NavRailButton extends NrButtonWidget {
 
   List<Widget> _buildLabel(BuildContext context) {
     final theme = Theme.of(context);
-    final color = selected ? selectedColor : unselectedColor;
+    final color = (selected && showSelected) ? selectedColor : unselectedColor;
     final style = theme.textTheme.labelMedium!.copyWith(color: color);
     final label = this.label != null
         ? Text(this.label ?? '', style: style)
@@ -171,6 +172,7 @@ class NavRailButton extends NrButtonWidget {
     Function()? onTap,
     bool? expanded,
     bool? selected,
+    bool? showSelected,
     double? width,
     double? height,
     Color? selectedColor,
@@ -186,6 +188,7 @@ class NavRailButton extends NrButtonWidget {
     onTap: onTap ?? this.onTap,
     expanded: expanded ?? this.expanded,
     selected: selected ?? this.selected,
+    showSelected: showSelected ?? this.showSelected,
     width: width ?? this.width,
     height: height ?? this.height,
     selectedColor: selectedColor ?? this.selectedColor,

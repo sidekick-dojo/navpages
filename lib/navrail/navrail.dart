@@ -39,11 +39,23 @@ class NavRail extends StatefulWidget {
   /// The actions to display in the navigation rail.
   final List<NrButtonWidget> actions;
 
+  /// The index of the currently selected button.
+  ///
+  /// Used to highlight which button is active.
+  /// -1 indicates no button is selected.
+  final int selectedButtonIndex;
+
   /// The index of the currently selected action button.
   ///
   /// Used to highlight which action button is active.
   /// -1 indicates no action is selected.
   final int selectedActionIndex;
+
+  /// The index of the currently selected secondary action button.
+  ///
+  /// Used to highlight which secondary action button is active.
+  /// -1 indicates no secondary action is selected.
+  final int selectedSecondaryActionIndex;
 
   /// Whether the navigation rail can be expanded/collapsed.
   ///
@@ -144,6 +156,16 @@ class NavRail extends StatefulWidget {
   /// Whether the leading widget is on the top is true.
   final bool leadingOnTop;
 
+  /// Whether to show the selected action index.
+  ///
+  /// When true, the selected action index is displayed.
+  final bool showActionSelectedIndex;
+
+  /// Whether to show the selected secondary action index.
+  ///
+  /// When true, the selected secondary action index is displayed.
+  final bool showSecondaryActionSelectedIndex;
+
   /// Creates a NavRail widget.
   ///
   /// The [buttons] parameter is required. All other parameters are optional
@@ -152,7 +174,9 @@ class NavRail extends StatefulWidget {
     super.key,
     this.buttons = const [],
     this.actions = const [],
-    this.selectedActionIndex = 0,
+    this.selectedButtonIndex = 0,
+    this.selectedActionIndex = -1,
+    this.selectedSecondaryActionIndex = -1,
     this.expandable = false,
     this.expanded = false,
     this.minWidth = 0,
@@ -172,6 +196,8 @@ class NavRail extends StatefulWidget {
     this.smallLeading,
     this.leadingOnTop = false,
     this.expandableButtonHeight = 40,
+    this.showActionSelectedIndex = true,
+    this.showSecondaryActionSelectedIndex = true,
   });
 
   @override
@@ -186,6 +212,7 @@ class NavRail extends StatefulWidget {
 class NavRailState extends State<NavRail> {
   int _selectedButtonIndex = 0;
   int _selectedActionIndex = -1;
+  int _selectedSecondaryActionIndex = -1;
   bool _expanded = false;
   final _buttonsMenuController = MenuController();
   final _actionsMenuController = MenuController();
@@ -197,7 +224,9 @@ class NavRailState extends State<NavRail> {
   void initState() {
     super.initState();
     _expanded = widget.expanded;
+    _selectedButtonIndex = widget.selectedButtonIndex;
     _selectedActionIndex = widget.selectedActionIndex;
+    _selectedSecondaryActionIndex = widget.selectedSecondaryActionIndex;
     _buttons = widget.buttons;
     _actions = widget.actions;
     _secondaryActions = [];
@@ -313,12 +342,12 @@ class NavRailState extends State<NavRail> {
           (entry) => entry.value.copyWith(
             onTap: () async {
               setState(() {
-                _selectedActionIndex = entry.key;
+                _selectedSecondaryActionIndex = entry.key;
               });
               await entry.value.onTap?.call();
             },
             expanded: _expanded,
-            // selected: entry.key == _selectedActionIndex,
+            selected: entry.key == _selectedSecondaryActionIndex,
             selectedColor: selectedColor,
             unselectedColor: unselectedColor,
             selectedBackgroundColor: selectedBackgroundColor,

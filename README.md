@@ -38,6 +38,9 @@ A flexible Flutter package for creating responsive navigation pages with integra
 - **🖥️ Fullscreen Mode**: Toggle fullscreen mode to remove chrome frame around pages for immersive experiences
 - **🔧 Custom Button Widgets**: NrButtonWidget class for creating custom navigation buttons with extended functionality
 - **🎨 Flexible Widget Support**: Accept any Widget type as children - NavPage, Scaffold, Container, or custom widgets for maximum flexibility
+- **📍 Flexible NavRail Positioning**: Position NavRail at `top`, `bottom`, `left`, or `right` for custom layouts
+- **🦶 Footer Support**: Optional footer widget with full-width positioning control
+- **🎛️ Dynamic Layout Controls**: Programmatically toggle header/footer positioning and action selection visibility
 
 ## Installation
 
@@ -45,7 +48,7 @@ Add NavPages to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  navpages: ^1.3.1
+  navpages: ^1.5.0
 ```
 
 Then run:
@@ -1077,6 +1080,225 @@ class _SecondaryActionsExampleState extends State<SecondaryActionsExample> {
 }
 ```
 
+### NavRail Positioning
+
+Position the NavRail at different locations for custom layouts:
+
+```dart
+// NavRail positioned at the top
+NavPages(
+  navrailPosition: NavRailPosition.top,
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+    NavRailButton(label: 'Settings', icon: Icons.settings),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+    NavPage(child: const SettingsPage()),
+  ],
+)
+
+// NavRail positioned at the bottom
+NavPages(
+  navrailPosition: NavRailPosition.bottom,
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+
+// NavRail positioned on the right
+NavPages(
+  navrailPosition: NavRailPosition.right,
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+```
+
+### Dynamic NavRail Positioning
+
+Change NavRail position programmatically:
+
+```dart
+class DynamicPositioningExample extends StatefulWidget {
+  const DynamicPositioningExample({super.key});
+
+  @override
+  State<DynamicPositioningExample> createState() => _DynamicPositioningExampleState();
+}
+
+class _DynamicPositioningExampleState extends State<DynamicPositioningExample> {
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      buttons: [
+        NavRailButton(label: 'Home', icon: Icons.home),
+        NavRailButton(label: 'Profile', icon: Icons.person),
+      ],
+      children: [
+        NavPage(
+          navbar: Navbar(title: 'Home'),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Change NavRail position dynamically
+                  NavPages.of(context).setNavRailPosition(NavRailPosition.top);
+                },
+                child: Text('Move NavRail to Top'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  NavPages.of(context).setNavRailPosition(NavRailPosition.bottom);
+                },
+                child: Text('Move NavRail to Bottom'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  NavPages.of(context).setNavRailPosition(NavRailPosition.left);
+                },
+                child: Text('Move NavRail to Left'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  NavPages.of(context).setNavRailPosition(NavRailPosition.right);
+                },
+                child: Text('Move NavRail to Right'),
+              ),
+            ],
+          ),
+        ),
+        NavPage(child: const ProfilePage()),
+      ],
+    );
+  }
+}
+```
+
+### Footer Support
+
+Add footer widgets with flexible positioning:
+
+```dart
+NavPages(
+  // Optional footer widget
+  footer: Container(
+    height: 60,
+    color: Colors.grey[200],
+    child: Row(
+      children: [
+        Icon(Icons.copyright),
+        Spacer(),
+        Text('© 2025 My App'),
+        Spacer(),
+        Icon(Icons.info),
+      ],
+    ),
+  ),
+  
+  // Use full footer (spans below navigation rail)
+  useFullFooter: true,
+  
+  buttons: [
+    NavRailButton(label: 'Home', icon: Icons.home),
+    NavRailButton(label: 'Profile', icon: Icons.person),
+  ],
+  children: [
+    NavPage(child: const HomePage()),
+    NavPage(child: const ProfilePage()),
+  ],
+)
+```
+
+### Dynamic Layout Controls
+
+Control header/footer positioning and action selection visibility programmatically:
+
+```dart
+class DynamicLayoutExample extends StatefulWidget {
+  const DynamicLayoutExample({super.key});
+
+  @override
+  State<DynamicLayoutExample> createState() => _DynamicLayoutExampleState();
+}
+
+class _DynamicLayoutExampleState extends State<DynamicLayoutExample> {
+  @override
+  Widget build(BuildContext context) {
+    return NavPages(
+      header: Container(
+        height: 60,
+        color: Colors.blue,
+        child: Center(child: Text('Dynamic Header', style: TextStyle(color: Colors.white))),
+      ),
+      footer: Container(
+        height: 60,
+        color: Colors.grey[200],
+        child: Center(child: Text('Dynamic Footer')),
+      ),
+      buttons: [
+        NavRailButton(label: 'Home', icon: Icons.home),
+        NavRailButton(label: 'Profile', icon: Icons.person),
+      ],
+      actions: [
+        NavRailButton(label: 'Settings', icon: Icons.settings),
+        NavRailButton(label: 'Help', icon: Icons.help),
+      ],
+      children: [
+        NavPage(
+          navbar: Navbar(title: 'Home'),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Toggle full header positioning
+                  NavPages.of(context).toggleUseFullHeader();
+                },
+                child: Text('Toggle Full Header'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Toggle full footer positioning
+                  NavPages.of(context).toggleUseFullFooter();
+                },
+                child: Text('Toggle Full Footer'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Toggle action selection visibility
+                  NavPages.of(context).toggleShowActionSelectionIndex();
+                },
+                child: Text('Toggle Action Selection'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Toggle secondary action selection visibility
+                  NavPages.of(context).toggleShowSecondaryActionSelectedIndex();
+                },
+                child: Text('Toggle Secondary Action Selection'),
+              ),
+            ],
+          ),
+        ),
+        NavPage(child: const ProfilePage()),
+      ],
+    );
+  }
+}
+```
+
 ## API Reference
 
 ### NavPages
@@ -1104,6 +1326,11 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `navrailLeadingOnTop` | `bool` | `false` | Whether leading widgets appear at the top of the navigation rail |
 | `header` | `Widget?` | `null` | Optional header widget for the site |
 | `useFullHeader` | `bool` | `false` | Whether to use full header when direction is vertical |
+| `footer` | `Widget?` | `null` | Optional footer widget for the site |
+| `useFullFooter` | `bool` | `false` | Whether to use full footer when direction is vertical |
+| `navrailPosition` | `NavRailPosition` | `NavRailPosition.left` | Position of the navigation rail (top, bottom, left, right) |
+| `showActionSelectionIndex` | `bool` | `true` | Whether to show selection for action buttons |
+| `showSecondaryActionSelectedIndex` | `bool` | `true` | Whether to show selection for secondary action buttons |
 | `fullscreen` | `bool` | `false` | Whether to enable fullscreen mode (removes chrome frame) |
 
 #### Static Methods
@@ -1129,6 +1356,12 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `canPop()` | Check if navigation can pop | None | `bool` |
 | `pushReplacement(Widget page)` | Replace current page | `page` - Widget to replace with | `void` |
 | `setFullscreen(bool fullscreen)` | Toggle fullscreen mode | `fullscreen` - Whether to enable fullscreen | `void` |
+| `setNavRailPosition(NavRailPosition position)` | Change NavRail position | `position` - NavRailPosition enum | `void` |
+| `toggleUseFullHeader()` | Toggle full header positioning | None | `void` |
+| `toggleUseFullFooter()` | Toggle full footer positioning | None | `void` |
+| `toggleShowActionSelectionIndex()` | Toggle action selection visibility | None | `void` |
+| `toggleShowSecondaryActionSelectedIndex()` | Toggle secondary action selection visibility | None | `void` |
+| `isFullscreen()` | Get current fullscreen status | None | `bool` |
 
 #### Example Usage
 
@@ -1499,6 +1732,12 @@ NavRail(
 #### NavRailDirection
 - `NavRailDirection.vertical` - Vertical rail (default)
 - `NavRailDirection.horizontal` - Horizontal rail
+
+#### NavRailPosition
+- `NavRailPosition.left` - NavRail positioned on the left (default)
+- `NavRailPosition.right` - NavRail positioned on the right
+- `NavRailPosition.top` - NavRail positioned at the top
+- `NavRailPosition.bottom` - NavRail positioned at the bottom
 
 #### NavRailButtonLabelPosition
 - `NavRailButtonLabelPosition.right` - Label to the right of icon (default)
@@ -1933,6 +2172,50 @@ If you're still experiencing issues:
 
 This guide helps you migrate between different versions of NavPages.
 
+### Migrating to v1.5.0
+
+#### New Features
+
+1. **NavRail Positioning**: Added flexible positioning for NavRail
+   - `navrailPosition`: Property to position NavRail at top, bottom, left, or right
+   - `setNavRailPosition()`: Method to change NavRail position programmatically
+   - Enables custom layouts beyond the traditional left-side navigation
+
+2. **Footer Support**: Added footer widget functionality
+   - `footer`: Optional footer widget for the site
+   - `useFullFooter`: Controls whether footer spans full width below navigation rail
+   - `toggleUseFullFooter()`: Method to toggle full footer positioning dynamically
+
+3. **Dynamic Layout Controls**: Enhanced programmatic control over layout
+   - `toggleUseFullHeader()`: Toggle full header positioning dynamically
+   - `toggleShowActionSelectionIndex()`: Toggle action selection visibility
+   - `toggleShowSecondaryActionSelectedIndex()`: Toggle secondary action selection visibility
+   - `isFullscreen()`: Get current fullscreen status
+
+4. **Action Selection Control**: Fine-grained control over action button selection
+   - `showActionSelectionIndex`: Control visibility of action button selection
+   - `showSecondaryActionSelectedIndex`: Control visibility of secondary action selection
+   - Prevents secondary actions from displaying selected when equal to selected action index
+
+#### Migration Steps
+
+1. **Update Package Version**:
+   ```yaml
+   dependencies:
+     navpages: ^1.5.0
+   ```
+
+2. **Add New Features** (optional):
+   - Consider adding footer widgets for site-wide elements
+   - Use NavRail positioning for custom layouts
+   - Implement dynamic layout controls for enhanced user experience
+
+3. **Test Thoroughly**:
+   - Test NavRail positioning across different screen sizes
+   - Verify footer functionality and positioning
+   - Check dynamic layout controls work correctly
+   - Ensure action selection behavior is as expected
+
 ### Migrating to v1.3.1
 
 #### New Features
@@ -2139,6 +2422,7 @@ NavPages(
 
 | NavPages Version | Flutter Version | Dart Version |
 |------------------|-----------------|--------------|
+| 1.5.0 | >=1.17.0 | ^3.9.0 |
 | 1.3.1 | >=1.17.0 | ^3.9.0 |
 | 1.3.0 | >=1.17.0 | ^3.9.0 |
 | 1.2.5 | >=1.17.0 | ^3.9.0 |
@@ -2188,6 +2472,9 @@ Check out the `example/` directory for complete sample applications demonstratin
 - **Fullscreen Mode**: Immersive fullscreen experience
 - **Custom Button Widgets**: Extended button functionality with NrButtonWidget
 - **Flexible Widget Support**: Mixed widget types (NavPage, Scaffold, Container) in navigation
+- **NavRail Positioning**: Flexible positioning (top, bottom, left, right) for custom layouts
+- **Footer Support**: Site-wide footer widgets with flexible positioning
+- **Dynamic Layout Controls**: Programmatic control over header/footer positioning and action selection
 
 ## Contributing
 

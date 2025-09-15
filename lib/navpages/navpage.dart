@@ -40,11 +40,17 @@ class NavPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ?navbar,
-        if (child != null) Expanded(child: child!),
-      ],
+    final size = MediaQuery.sizeOf(context);
+    return SizedBox(
+      width: size.width,
+      height: size.height,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ?navbar,
+          if (child != null) Expanded(child: child!),
+        ],
+      ),
     );
   }
 }
