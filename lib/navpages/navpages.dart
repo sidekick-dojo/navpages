@@ -360,7 +360,7 @@ class NavPagesState extends State<NavPages> {
 
     final navRail = NavRail(
       key: _navRailKey,
-      direction: _direction == NavPagesDirection.vertical
+      direction: direction == NavPagesDirection.vertical
           ? NavRailDirection.vertical
           : NavRailDirection.horizontal,
       buttons: _buttons,
