@@ -355,7 +355,7 @@ class NavPagesState extends State<NavPages> {
     }
 
     if (_fullscreen) {
-      return _history[_selectedIndex];
+      return SafeArea(child: _history[_selectedIndex]);
     }
 
     final navRail = NavRail(
@@ -381,75 +381,79 @@ class NavPagesState extends State<NavPages> {
       leadingOnTop: widget.navrailLeadingOnTop,
     );
 
-    return direction == NavPagesDirection.vertical
-        ? _headerFullscreen || _footerFullscreen
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ?widget.header,
-                    Expanded(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_position == NavPagesRailPosition.left ||
-                              _position == NavPagesRailPosition.top)
-                            navRail,
-                          !_footerFullscreen
-                              ? Expanded(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Expanded(child: _history[_selectedIndex]),
-                                      ?widget.footer,
-                                    ],
-                                  ),
-                                )
-                              : Expanded(child: _history[_selectedIndex]),
-                          if (_position == NavPagesRailPosition.right ||
-                              _position == NavPagesRailPosition.bottom)
-                            navRail,
-                        ],
+    return SafeArea(
+      child: direction == NavPagesDirection.vertical
+          ? _headerFullscreen || _footerFullscreen
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ?widget.header,
+                      Expanded(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_position == NavPagesRailPosition.left ||
+                                _position == NavPagesRailPosition.top)
+                              navRail,
+                            !_footerFullscreen
+                                ? Expanded(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Expanded(
+                                          child: _history[_selectedIndex],
+                                        ),
+                                        ?widget.footer,
+                                      ],
+                                    ),
+                                  )
+                                : Expanded(child: _history[_selectedIndex]),
+                            if (_position == NavPagesRailPosition.right ||
+                                _position == NavPagesRailPosition.bottom)
+                              navRail,
+                          ],
+                        ),
                       ),
-                    ),
-                    if (_footerFullscreen) ?widget.footer,
-                  ],
-                )
-              : Row(
-                  children: [
-                    if (_position == NavPagesRailPosition.left ||
-                        _position == NavPagesRailPosition.top)
-                      navRail,
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ?widget.header,
-                          Expanded(child: _history[_selectedIndex]),
-                          ?widget.footer,
-                        ],
+                      if (_footerFullscreen) ?widget.footer,
+                    ],
+                  )
+                : Row(
+                    children: [
+                      if (_position == NavPagesRailPosition.left ||
+                          _position == NavPagesRailPosition.top)
+                        navRail,
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ?widget.header,
+                            Expanded(child: _history[_selectedIndex]),
+                            ?widget.footer,
+                          ],
+                        ),
                       ),
-                    ),
-                    if (_position == NavPagesRailPosition.right ||
-                        _position == NavPagesRailPosition.bottom)
-                      navRail,
-                  ],
-                )
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_headerFullscreen) ?widget.header,
-              if (_position == NavPagesRailPosition.left ||
-                  _position == NavPagesRailPosition.top)
-                navRail,
-              if (!_headerFullscreen) ?widget.header,
-              Expanded(child: _history[_selectedIndex]),
-              if (!_footerFullscreen) ?widget.footer,
-              if (_position == NavPagesRailPosition.right ||
-                  _position == NavPagesRailPosition.bottom)
-                navRail,
-              if (_footerFullscreen) ?widget.footer,
-            ],
-          );
+                      if (_position == NavPagesRailPosition.right ||
+                          _position == NavPagesRailPosition.bottom)
+                        navRail,
+                    ],
+                  )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_headerFullscreen) ?widget.header,
+                if (_position == NavPagesRailPosition.left ||
+                    _position == NavPagesRailPosition.top)
+                  navRail,
+                if (!_headerFullscreen) ?widget.header,
+                Expanded(child: _history[_selectedIndex]),
+                if (!_footerFullscreen) ?widget.footer,
+                if (_position == NavPagesRailPosition.right ||
+                    _position == NavPagesRailPosition.bottom)
+                  navRail,
+                if (_footerFullscreen) ?widget.footer,
+              ],
+            ),
+    );
   }
 
   /// Sets the buttons for the navigation rail.

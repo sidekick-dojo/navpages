@@ -361,7 +361,7 @@ class NavRailState extends State<NavRail> {
         .toList();
 
     if (widget.direction == NavRailDirection.horizontal) {
-      var count = (width ~/ buttonWidth) - (_expanded ? 2 : 3);
+      var count = (width ~/ buttonWidth) - (_expanded ? 2 : 4);
       if (count < 2) {
         count = 2;
       }
