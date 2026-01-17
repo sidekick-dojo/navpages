@@ -308,6 +308,7 @@ class NavPagesState extends State<NavPages> {
   bool _showActionSelectedIndex = true;
   bool _showSecondaryActionSelectedIndex = true;
   Widget? _fullscreenDialog;
+  Widget? _dialog;
 
   @override
   void initState() {
@@ -466,13 +467,31 @@ class NavPagesState extends State<NavPages> {
                   child: Container(
                     width: size.width,
                     height: size.height,
-                    padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
                 Center(child: _fullscreenDialog!),
+              ],
+            ),
+          if (_dialog != null)
+            Stack(
+              children: [
+                InkWell(
+                  onTap: () {
+                    hideDialog();
+                  },
+                  child: Container(
+                    width: size.width,
+                    height: size.height,
+                    padding: EdgeInsets.all(size.width * 0.125),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                    ),
+                    child: Center(child: _dialog!),
+                  ),
+                ),
               ],
             ),
         ],
@@ -763,7 +782,7 @@ class NavPagesState extends State<NavPages> {
 
   /// Shows a fullscreen dialog.
   ///
-  /// The [dialog] parameter should be a widget that represents
+  /// The dialog parameter should be a widget that represents
   /// the dialog to be displayed.
   void showFullscreenDialog(Widget dialog) {
     setState(() {
@@ -777,6 +796,25 @@ class NavPagesState extends State<NavPages> {
   void hideFullscreenDialog() {
     setState(() {
       _fullscreenDialog = null;
+    });
+  }
+
+  /// Shows a dialog.
+  ///
+  /// The dialog parameter should be a widget that represents
+  /// the dialog to be displayed.
+  void showDialog(Widget dialog) {
+    setState(() {
+      _dialog = dialog;
+    });
+  }
+
+  /// Hides a dialog.
+  ///
+  /// This method hides the dialog.
+  void hideDialog() {
+    setState(() {
+      _dialog = null;
     });
   }
 }
