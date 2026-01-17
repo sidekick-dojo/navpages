@@ -307,6 +307,7 @@ class NavPagesState extends State<NavPages> {
   bool _footerFullscreen = false;
   bool _showActionSelectedIndex = true;
   bool _showSecondaryActionSelectedIndex = true;
+  Widget? _fullscreenDialog;
 
   @override
   void initState() {
@@ -382,77 +383,100 @@ class NavPagesState extends State<NavPages> {
     );
 
     return SafeArea(
-      child: direction == NavPagesDirection.vertical
-          ? _headerFullscreen || _footerFullscreen
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ?widget.header,
-                      Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (_position == NavPagesRailPosition.left ||
-                                _position == NavPagesRailPosition.top)
-                              navRail,
-                            !_footerFullscreen
-                                ? Expanded(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Expanded(
-                                          child: _history[_selectedIndex],
+      child: Stack(
+        children: [
+          direction == NavPagesDirection.vertical
+              ? _headerFullscreen || _footerFullscreen
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ?widget.header,
+                          Expanded(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (_position == NavPagesRailPosition.left ||
+                                    _position == NavPagesRailPosition.top)
+                                  navRail,
+                                !_footerFullscreen
+                                    ? Expanded(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Expanded(
+                                              child: _history[_selectedIndex],
+                                            ),
+                                            ?widget.footer,
+                                          ],
                                         ),
-                                        ?widget.footer,
-                                      ],
-                                    ),
-                                  )
-                                : Expanded(child: _history[_selectedIndex]),
-                            if (_position == NavPagesRailPosition.right ||
-                                _position == NavPagesRailPosition.bottom)
-                              navRail,
-                          ],
-                        ),
-                      ),
-                      if (_footerFullscreen) ?widget.footer,
-                    ],
-                  )
-                : Row(
-                    children: [
-                      if (_position == NavPagesRailPosition.left ||
-                          _position == NavPagesRailPosition.top)
-                        navRail,
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ?widget.header,
-                            Expanded(child: _history[_selectedIndex]),
-                            ?widget.footer,
-                          ],
-                        ),
-                      ),
-                      if (_position == NavPagesRailPosition.right ||
-                          _position == NavPagesRailPosition.bottom)
-                        navRail,
-                    ],
-                  )
-          : Column(
-              mainAxisSize: MainAxisSize.min,
+                                      )
+                                    : Expanded(child: _history[_selectedIndex]),
+                                if (_position == NavPagesRailPosition.right ||
+                                    _position == NavPagesRailPosition.bottom)
+                                  navRail,
+                              ],
+                            ),
+                          ),
+                          if (_footerFullscreen) ?widget.footer,
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          if (_position == NavPagesRailPosition.left ||
+                              _position == NavPagesRailPosition.top)
+                            navRail,
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ?widget.header,
+                                Expanded(child: _history[_selectedIndex]),
+                                ?widget.footer,
+                              ],
+                            ),
+                          ),
+                          if (_position == NavPagesRailPosition.right ||
+                              _position == NavPagesRailPosition.bottom)
+                            navRail,
+                        ],
+                      )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_headerFullscreen) ?widget.header,
+                    if (_position == NavPagesRailPosition.left ||
+                        _position == NavPagesRailPosition.top)
+                      navRail,
+                    if (!_headerFullscreen) ?widget.header,
+                    Expanded(child: _history[_selectedIndex]),
+                    if (!_footerFullscreen) ?widget.footer,
+                    if (_position == NavPagesRailPosition.right ||
+                        _position == NavPagesRailPosition.bottom)
+                      navRail,
+                    if (_footerFullscreen) ?widget.footer,
+                  ],
+                ),
+          if (_fullscreenDialog != null)
+            Stack(
               children: [
-                if (_headerFullscreen) ?widget.header,
-                if (_position == NavPagesRailPosition.left ||
-                    _position == NavPagesRailPosition.top)
-                  navRail,
-                if (!_headerFullscreen) ?widget.header,
-                Expanded(child: _history[_selectedIndex]),
-                if (!_footerFullscreen) ?widget.footer,
-                if (_position == NavPagesRailPosition.right ||
-                    _position == NavPagesRailPosition.bottom)
-                  navRail,
-                if (_footerFullscreen) ?widget.footer,
+                InkWell(
+                  onTap: () {
+                    hideFullscreenDialog();
+                  },
+                  child: Container(
+                    width: size.width,
+                    height: size.height,
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+                Center(child: _fullscreenDialog!),
               ],
             ),
+        ],
+      ),
     );
   }
 
@@ -736,4 +760,23 @@ class NavPagesState extends State<NavPages> {
   /// Returns the [bool] secondary action selected index state for the navigation pages.
   bool get showSecondaryActionSelectedIndex =>
       _showSecondaryActionSelectedIndex;
+
+  /// Shows a fullscreen dialog.
+  ///
+  /// The [dialog] parameter should be a widget that represents
+  /// the dialog to be displayed.
+  void showFullscreenDialog(Widget dialog) {
+    setState(() {
+      _fullscreenDialog = dialog;
+    });
+  }
+
+  /// Hides a fullscreen dialog.
+  ///
+  /// This method hides the fullscreen dialog.
+  void hideFullscreenDialog() {
+    setState(() {
+      _fullscreenDialog = null;
+    });
+  }
 }
