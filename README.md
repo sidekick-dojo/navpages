@@ -1299,6 +1299,66 @@ class _DynamicLayoutExampleState extends State<DynamicLayoutExample> {
 }
 ```
 
+### Fullscreen Dialog
+
+The NavPages package supports fullscreen dialog mode, allowing you to present any page as a fullscreen overlay on top of your navigation stack. This is useful for workflows such as wizards, detailed forms, or modal flows where users should focus on a single task.
+
+```dart
+NavPages.of(context).showFullscreenDialog(
+  Scaffold(
+    appBar: AppBar(
+      title: const Text('Fullscreen Task'),
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () => NavPages.of(context).hideFullscreenDialog(),
+      ),
+    ),
+    body: const Center(
+      child: Text('Focus on this task...'),
+    ),
+  ),
+);
+```
+
+### Dialog
+
+For standard modal interactions, you can use the `showDialog` method. This displays your widget centered on the screen with a backdrop, ideal for alerts, confirmations, or simple inputs.
+
+```dart
+NavPages.of(context).showDialog(
+  Card(
+    child: Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Confirmation', style: TextStyle(fontSize: 20)),
+          const SizedBox(height: 16),
+          const Text('Are you sure you want to proceed?'),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextButton(
+                onPressed: () => NavPages.of(context).hideDialog(),
+                child: const Text('Cancel'),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Perform action
+                  NavPages.of(context).hideDialog();
+                },
+                child: const Text('Confirm'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  ),
+);
+```
 ## API Reference
 
 ### NavPages
@@ -1362,6 +1422,10 @@ The main widget that manages multiple pages and navigation. This is the core com
 | `toggleShowActionSelectionIndex()` | Toggle action selection visibility | None | `void` |
 | `toggleShowSecondaryActionSelectedIndex()` | Toggle secondary action selection visibility | None | `void` |
 | `isFullscreen()` | Get current fullscreen status | None | `bool` |
+| `showDialog(Widget dialog)` | Show a modal dialog | `dialog` - Widget to display | `void` |
+| `hideDialog()` | Hide the current dialog | None | `void` |
+| `showFullscreenDialog(Widget dialog)` | Show a fullscreen dialog | `dialog` - Widget to display | `void` |
+| `hideFullscreenDialog()` | Hide the fullscreen dialog | None | `void` |
 
 #### Example Usage
 
